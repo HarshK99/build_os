@@ -94,6 +94,17 @@
   tr:last-child td { border-bottom: none; }
   .error { color: var(--muted); padding: 24px 0; }
 
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 4px; }
+  .filters button {
+    font: inherit; font-size: 13.5px; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--bg); color: var(--muted);
+  }
+  .filters button:hover { color: var(--text); }
+  .filters button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .filters button span { opacity: 0.7; margin-left: 2px; }
+  td .parts { display: block; font-size: 12.5px; color: var(--muted); }
+  td.nowrap { white-space: nowrap; }
+
   @media (max-width: 860px) {
     .layout { grid-template-columns: 1fr; }
     aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
@@ -108,7 +119,7 @@
     <input id="search" type="search" placeholder="Search this page" autocomplete="off">
     <div id="results"></div>
     <div id="docs"></div>
-    <div class="label">On this page</div>
+    <div class="label" id="tocLabel">On this page</div>
     <nav id="toc"></nav>
   </aside>
   <main id="content"></main>
@@ -118,20 +129,74 @@
 const content = document.getElementById("content");
 const toc = document.getElementById("toc");
 const docsNav = document.getElementById("docs");
-let current = new URLSearchParams(location.search).get("doc") || "BUILD_OS.md";
+const tocLabel = document.getElementById("tocLabel");
+const params = new URLSearchParams(location.search);
+const onProjects = params.get("page") === "projects";
+let current = params.get("doc") || "BUILD_OS.md";
+let projectFilter = "All";
 let observer;
 
 const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const esc = (text) => String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const pageName = (file) => file.replace(/\.md$/i, "").replace(/_/g, " ").toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase()).replace(/\bOs\b/, "OS");
 
 async function loadDocList() {
-  const docs = await fetch("/_docs").then((r) => r.json()).catch(() => []);
-  if (docs.length < 2) return;
-  docsNav.innerHTML = '<div class="label">Docs</div>' + docs.map((d) =>
-    `<a href="?doc=${encodeURIComponent(d)}" class="${d === current ? "active" : ""}">${d.replace(/\.md$/i, "")}</a>`
-  ).join("");
+  const docs = await fetch("/_docs").then((r) => r.json()).catch(() => ["BUILD_OS.md"]);
+  docsNav.innerHTML = '<div class="label">Pages</div>' + docs.map((d) =>
+    `<a href="?doc=${encodeURIComponent(d)}" class="${!onProjects && d === current ? "active" : ""}">${esc(pageName(d))}</a>`
+  ).join("") + `<a href="?page=projects" class="${onProjects ? "active" : ""}">Projects</a>`;
+}
+
+// Every project folder, read live from disk by the viewer.
+async function renderProjects() {
+  let data;
+  try {
+    const res = await fetch("/_projects");
+    if (!res.ok) throw new Error(res.status);
+    data = await res.json();
+  } catch {
+    content.innerHTML = '<p class="error">Could not read the project folders. Close this tab and open Build OS again from the Start Menu.</p>';
+    return;
+  }
+
+  const counts = {};
+  data.projects.forEach((p) => { counts[p.group] = (counts[p.group] || 0) + 1; });
+  if (projectFilter !== "All" && !counts[projectFilter]) projectFilter = "All";
+  const shown = data.projects.filter((p) => projectFilter === "All" || p.group === projectFilter);
+
+  const buttons = [["All", data.projects.length], ...Object.entries(counts).sort((a, b) => b[1] - a[1])]
+    .map(([group, n]) => `<button data-group="${esc(group)}" class="${group === projectFilter ? "on" : ""}">${esc(group)} <span>${n}</span></button>`)
+    .join("");
+  const day = (ms) => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+  const rows = shown.map((p) => `<tr>
+      <td><strong>${esc(p.name)}</strong>${p.parts.length ? `<span class="parts">${esc(p.parts.join(", "))}</span>` : ""}</td>
+      <td>${esc(p.group)}</td>
+      <td>${esc(p.kind)}</td>
+      <td class="nowrap">${p.repoUrl ? `<a href="${esc(p.repoUrl)}" target="_blank" rel="noopener">${esc(p.git)}</a>` : esc(p.git)}</td>
+      <td class="nowrap">${day(p.changed)}</td>
+    </tr>`).join("");
+
+  const scroll = window.scrollY;
+  content.innerHTML = `<h1>Projects</h1>
+    <p>${data.projects.length} project folders in <code>${esc(data.root)}</code>, most recently changed first. Read from disk each time this page opens; nothing is saved.</p>
+    <div class="filters">${buttons}</div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Project</th><th>Folder</th><th>Kind</th><th>Git</th><th>Last changed</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+  content.querySelectorAll(".filters button").forEach((button) =>
+    button.addEventListener("click", () => { projectFilter = button.dataset.group; renderProjects(); }));
+
+  observer?.disconnect();
+  toc.innerHTML = "";
+  tocLabel.hidden = true;
+  document.title = "Projects";
+  window.scrollTo(0, scroll);
+  runSearch();
 }
 
 async function render() {
+  if (onProjects) return renderProjects();
   let md;
   try {
     const res = await fetch("/" + encodeURIComponent(current));
@@ -155,6 +220,7 @@ async function render() {
   const headings = [...content.querySelectorAll("h2, h3")];
   const seen = {};
   toc.innerHTML = "";
+  tocLabel.hidden = headings.length === 0;
   headings.forEach((h) => {
     let id = slug(h.textContent);
     seen[id] = (seen[id] || 0) + 1;

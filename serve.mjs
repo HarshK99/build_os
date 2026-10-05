@@ -2,19 +2,181 @@
 // Start Menu shortcut); can also be run by hand with: node serve.mjs
 // It stops itself once no page has asked for anything for a few minutes.
 import { createServer } from "node:http";
-import { readFile, readdir } from "node:fs/promises";
-import { basename, dirname, join } from "node:path";
+import { readFile, readdir, stat } from "node:fs/promises";
+import { basename, dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT) || 4321;
 const idleMs = Number(process.env.IDLE_MS) || 3 * 60 * 1000;
+// The folder whose sub-folders are listed on the Projects page: two levels up from here.
+const projectsRoot = process.env.PROJECTS_ROOT || resolve(root, "..", "..");
 let lastSeen = Date.now();
 
 const send = (res, status, type, body) => {
   res.writeHead(status, { "Content-Type": type, "Cache-Control": "no-store" });
   res.end(body);
 };
+
+// ---- Projects page: read straight from disk, nothing is saved ----
+
+// Folders that hold generated or downloaded files; they say nothing about when I last worked.
+const SKIP = new Set([
+  "node_modules", ".git", ".next", ".vercel", ".turbo", "dist", "build", "out", "coverage",
+  ".venv", "venv", "__pycache__", ".dart_tool", ".idea", ".gradle", ".cache",
+]);
+const NODE_KINDS = [
+  ["next", "Next.js"], ["expo", "Expo"], ["react-native", "React Native"], ["astro", "Astro"],
+  ["electron", "Electron"], ["vite", "Vite"], ["react", "React"],
+  ["express", "Node server"], ["fastify", "Node server"], ["hono", "Node server"],
+];
+const DOCUMENT_FILE = /\.(md|txt|pdf|docx?|html)$/i;
+
+const list = async (dir) => {
+  try {
+    return await readdir(dir, { withFileTypes: true });
+  } catch {
+    return [];
+  }
+};
+const changedAt = async (path) => {
+  try {
+    return (await stat(path)).mtimeMs;
+  } catch {
+    return 0;
+  }
+};
+const isProjectDir = (entry) => entry.isDirectory() && !entry.name.startsWith(".") && !entry.name.startsWith("0.");
+
+async function newestChange(dir, depth = 4) {
+  let newest = 0;
+  for (const entry of await list(dir)) {
+    if (SKIP.has(entry.name)) continue;
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      if (depth > 1) newest = Math.max(newest, await newestChange(full, depth - 1));
+    } else {
+      newest = Math.max(newest, await changedAt(full));
+    }
+  }
+  return newest;
+}
+
+async function kindOf(dir, names) {
+  if (names.has("package.json")) {
+    try {
+      const pkg = JSON.parse(await readFile(join(dir, "package.json"), "utf8"));
+      const deps = { ...pkg.dependencies, ...pkg.devDependencies };
+      for (const [dep, label] of NODE_KINDS) if (deps[dep]) return label;
+    } catch {}
+    return "Node";
+  }
+  if (names.has("pubspec.yaml")) return "Flutter";
+  if (names.has("pyproject.toml") || names.has("requirements.txt")) return "Python";
+  if (names.has("manifest.json")) {
+    const manifest = await readFile(join(dir, "manifest.json"), "utf8").catch(() => "");
+    if (manifest.includes("manifest_version")) return "Browser extension";
+  }
+  if (names.has("index.html")) return "Static page";
+  return null;
+}
+
+async function repoUrlOf(dir) {
+  const config = await readFile(join(dir, ".git", "config"), "utf8").catch(() => "");
+  const url = config.match(/^\s*url\s*=\s*(.+)$/m)?.[1].trim();
+  if (!url) return null;
+  // git@github.com:User/repo.git -> https://github.com/User/repo
+  return url.replace(/^git@([^:]+):/, "https://$1/").replace(/\.git$/, "");
+}
+
+// What can be told from a folder's own top level, without walking into it.
+async function markers(dir) {
+  const entries = await list(dir);
+  const names = new Set(entries.map((entry) => entry.name));
+  return {
+    entries,
+    kind: await kindOf(dir, names),
+    hasGit: names.has(".git"),
+    repoUrl: await repoUrlOf(dir),
+    lastCommit: await changedAt(join(dir, ".git", "logs", "HEAD")),
+  };
+}
+
+const gitLabel = ({ repoUrl, hasGit }) => {
+  if (repoUrl) return repoUrl.includes("github.com") ? "On GitHub" : "Has a remote";
+  return hasGit ? "Local only" : "No";
+};
+
+async function describeProject(dir, name, group) {
+  const own = await markers(dir);
+  const project = {
+    name,
+    group,
+    kind: own.kind,
+    parts: [],
+    repoUrl: own.repoUrl,
+    git: gitLabel(own),
+    // An empty folder has no files to date, so fall back to the folder itself.
+    changed: Math.max(await newestChange(dir), own.lastCommit) || (await changedAt(dir)),
+  };
+  if (project.kind) return project;
+
+  // No project files and no repo at this level: it may be a folder that holds several projects.
+  const children = own.hasGit ? [] : own.entries.filter(isProjectDir);
+  const found = await Promise.all(children.map((child) => markers(join(dir, child.name))));
+  const parts = found
+    .map((part, i) => ({ ...part, name: children[i].name }))
+    .filter((part) => part.kind || part.hasGit);
+
+  if (parts.length) {
+    project.parts = parts.map((part) => part.name);
+    project.changed = Math.max(project.changed, ...parts.map((part) => part.lastCommit));
+    if (parts.length === 1) {
+      project.kind = parts[0].kind || "Other";
+      project.repoUrl = parts[0].repoUrl;
+      project.git = gitLabel(parts[0]);
+    } else {
+      project.kind = `${parts.length} parts`;
+      project.git = `${parts.filter((part) => part.repoUrl).length} of ${parts.length} pushed`;
+    }
+    return project;
+  }
+
+  const files = own.entries.filter((entry) => !entry.isDirectory());
+  if (!own.entries.length) project.kind = "Empty";
+  else if (files.length && files.every((file) => DOCUMENT_FILE.test(file.name))) project.kind = "Documents";
+  else project.kind = "Other";
+  return project;
+}
+
+let projectsCache = { at: 0, body: "" };
+
+async function scanProjects() {
+  if (Date.now() - projectsCache.at < 60 * 1000) return projectsCache.body;
+
+  const started = Date.now();
+  const jobs = [];
+  for (const group of (await list(projectsRoot)).filter(isProjectDir)) {
+    const groupDir = join(projectsRoot, group.name);
+    const entries = await list(groupDir);
+    for (const child of entries.filter(isProjectDir)) {
+      jobs.push(describeProject(join(groupDir, child.name), child.name, group.name));
+    }
+    // A top-level folder with loose files in it is itself a project.
+    if (entries.some((entry) => !entry.isDirectory())) {
+      jobs.push(describeProject(groupDir, group.name, basename(projectsRoot)));
+    }
+  }
+  const projects = (await Promise.all(jobs)).sort((a, b) => b.changed - a.changed);
+
+  projectsCache = {
+    at: Date.now(),
+    body: JSON.stringify({ root: projectsRoot, tookMs: Date.now() - started, projects }),
+  };
+  return projectsCache.body;
+}
+
+// ---- Server ----
 
 const server = createServer(async (req, res) => {
   lastSeen = Date.now();
@@ -29,8 +191,14 @@ const server = createServer(async (req, res) => {
       return send(res, 204, "text/plain", "");
     }
     if (path === "/_docs") {
-      const docs = (await readdir(root)).filter((f) => f.toLowerCase().endsWith(".md")).sort();
+      // README.md describes this repo; it is not one of the pages to read.
+      const docs = (await readdir(root))
+        .filter((f) => f.toLowerCase().endsWith(".md") && f.toLowerCase() !== "readme.md")
+        .sort();
       return send(res, 200, "application/json", JSON.stringify(docs));
+    }
+    if (path === "/_projects") {
+      return send(res, 200, "application/json", await scanProjects());
     }
     // Only markdown files that sit directly in this folder are served.
     const name = basename(path);

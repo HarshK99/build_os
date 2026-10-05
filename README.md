@@ -10,7 +10,7 @@ The document covers which tool and skill to use when, what is installed where (C
 |---|---|
 | `BUILD_OS.md` | The document itself. Edit this. |
 | `index.html` | The reading page: sidebar of sections, keyword search, light and dark mode. |
-| `serve.mjs` | A small local server that gives the page access to the markdown. No dependencies. |
+| `serve.mjs` | A small local server that gives the page the markdown and scans the project folders. No dependencies. |
 | `launch.ps1` | Starts the server hidden if it is not running, then opens the page. |
 
 ## Reading it
@@ -43,9 +43,29 @@ $s.Save()
 
 To remove it, delete `Build OS.lnk` from that folder.
 
+## The Projects page
+
+The sidebar has a second page, Projects. It lists every project folder under the folder two levels above this one (here, `D:\FounderMode`), most recently changed first.
+
+- It is read from disk each time the page opens. Nothing is saved, so the list never appears in this repo.
+- Each row shows the name, the folder it sits in, a guess at the kind of project from its files, whether it is on GitHub, and when it last changed.
+- A folder that only holds other projects is shown as one row with its parts listed.
+- Folders whose names start with `.` or `0.` are left out.
+- Set the `PROJECTS_ROOT` environment variable to list a different folder.
+
+How the scan works: it uses only Node's built-in file tools, and it only reads.
+
+| Column | How it is worked out |
+|---|---|
+| Kind | From `package.json` dependencies (Next.js, Vite, Expo and so on), or marker files such as `pubspec.yaml` for Flutter and `requirements.txt` for Python |
+| Git | From the `url` line in the project's `.git/config`. Git itself is not run. |
+| Last changed | The newest file date up to four folders deep, skipping generated folders like `node_modules`, or the last commit if that is newer |
+
+The result is reused for one minute, so a brand-new folder can take up to a minute to appear.
+
 ## How the page works
 
-- Any `.md` file placed in this folder appears in the sidebar as another document.
+- Any `.md` file placed in this folder appears in the sidebar as another page, except this README.
 - The server only serves `index.html` and markdown files from this folder, and only to this machine.
 - Search is a plain keyword match over paragraphs, list items and table rows.
 - The open page pings the server every 20 seconds. When the pings stop, the server exits.

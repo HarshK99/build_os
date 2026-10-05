@@ -6,6 +6,8 @@ Last inventory: 2026-10-05. This doc is for reading. Nothing here is loaded into
 
 To read it in the browser, open the Start Menu, type "Build OS" and press Enter. The viewer starts hidden, opens http://localhost:4321, and stops itself a few minutes after the page is closed.
 
+The same viewer has a Projects page in the sidebar: every project folder under `D:\FounderMode`, read live from disk, most recently changed first.
+
 ## The big picture
 
 Two AI coding tools are set up on this machine. They do not share anything: instructions, skills and chats are separate for each. Claude Code is the main one going forward.
