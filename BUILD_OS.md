@@ -237,4 +237,47 @@ Suggestions in the order I would do them. Nothing here has been done yet.
 9. **Decide what to do with the Codex chats.** They are the only record of work before September. Keep them, or pull out what matters and then clear them.
 10. **Finish the inventory:** per-project `CLAUDE.md`, `AGENTS.md` and `learnings.md` files.
 11. **Put this folder under git,** so changes to the doc have a history.
-12. **Only after the above,** decide whether anything else here should become a skill or a `CLAUDE.md` line.
+12. **Keep a copy of the PowerShell profile in this repo,** so the terminal commands in section 9 survive a reset.
+13. **Only after the above,** decide whether anything else here should become a skill or a `CLAUDE.md` line.
+
+## 9. Shortcuts on this machine
+
+Things I set up so I can get somewhere fast. Snapshot on 2026-10-05.
+
+### Terminal commands
+
+Typed in the Windows PowerShell terminal. They live in my PowerShell profile, `Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`, which was last changed on 2026-10-05 (`web` added).
+
+| Command | What it does | Options |
+|---|---|---|
+| `apps` | Goes to `D:\FounderMode\Apps` | `apps typeforme` goes straight into that app; Tab completes the name |
+| `web` | Goes to `D:\FounderMode\Websites` | `web kapip_website` goes straight into that site; Tab completes the name |
+| `lt` | Lists the 10 most recently changed items in the current folder | `lt -n 20` for more, `lt -All` for everything, `lt some\folder` for another folder |
+| `lc` | The same, ordered by when each item was created | Same options as `lt` |
+
+- They work in Windows PowerShell only. They are not available in Git Bash or the old Command Prompt.
+- Claude Code does not load them when it runs commands, so Claude cannot use `apps` itself.
+- The profile file is not saved anywhere else. If the laptop is reset, these are gone.
+
+### Opened by name
+
+Type the name in the Start Menu, or in mysearchbar (Alt + Space).
+
+| Name | What opens | Where it comes from |
+|---|---|---|
+| Build OS | This doc and the Projects page | `Apps\build_os\launch.ps1` |
+| mysearchbar | The search bar itself | `Apps\mysearchbar\dist\mysearchbar.exe` |
+| Goal Widget | The goal widget | Installed app, built in `Apps\goal-widget` |
+
+### Starts with Windows
+
+| Name | Added |
+|---|---|
+| mysearchbar | 2026-10-05 |
+| Goal Widget | 2026-10-05 |
+
+### Not set up
+
+- No shortcut command for the `Buildweek` folder.
+- No custom keyboard shortcuts inside Claude Code.
+- No git short commands.
