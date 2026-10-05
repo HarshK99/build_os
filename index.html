@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Build OS</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #f7f8fa;
+    --text: #1f2430;
+    --muted: #667085;
+    --line: #e4e7ec;
+    --accent: #4f46e5;
+    --accent-soft: #eef0ff;
+    --code-bg: #f1f3f6;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1115;
+      --panel: #151821;
+      --text: #e3e6ec;
+      --muted: #98a1b3;
+      --line: #262b37;
+      --accent: #9aa2ff;
+      --accent-soft: #1e2140;
+      --code-bg: #1c202b;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  }
+  .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+
+  aside {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    background: var(--panel); border-right: 1px solid var(--line);
+    padding: 28px 16px 40px;
+  }
+  .brand { font-weight: 700; font-size: 18px; padding: 0 10px 18px; letter-spacing: -0.01em; }
+  .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); padding: 14px 10px 6px;
+  }
+  aside a {
+    display: block; padding: 6px 10px; border-radius: 6px;
+    color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.4;
+  }
+  aside a:hover { color: var(--text); background: var(--line); }
+  aside a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+  aside a.sub { padding-left: 24px; font-size: 13px; }
+
+  #search {
+    width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font: inherit; font-size: 14px;
+  }
+  #search:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  #results { margin-top: 6px; }
+  #results a { padding: 7px 10px; }
+  #results .where { display: block; font-size: 11px; font-weight: 600; color: var(--accent); }
+  #results .snippet { display: block; font-size: 12.5px; color: var(--muted); }
+  #results mark, .flash { background: #ffe58a; color: #1f2430; }
+  #results mark { border-radius: 3px; padding: 0 1px; }
+  #results .none { padding: 7px 10px; font-size: 13px; color: var(--muted); }
+  .flash { transition: background 0.3s; border-radius: 4px; }
+
+  main { padding: 48px 56px 120px; max-width: 980px; }
+  main h1 { font-size: 34px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 12px; }
+  main h2 {
+    font-size: 24px; letter-spacing: -0.01em; margin: 56px 0 14px;
+    padding-top: 28px; border-top: 1px solid var(--line);
+  }
+  main h3 { font-size: 18px; margin: 32px 0 10px; }
+  main p, main li { color: var(--text); }
+  main a { color: var(--accent); }
+  main ul, main ol { padding-left: 22px; }
+  main li { margin: 6px 0; }
+  code {
+    font: 13.5px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: var(--code-bg); padding: 2px 6px; border-radius: 5px;
+  }
+  pre { background: var(--code-bg); padding: 16px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--panel); font-weight: 600; font-size: 13px; color: var(--muted); white-space: nowrap; }
+  tr:last-child td { border-bottom: none; }
+  .error { color: var(--muted); padding: 24px 0; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: 1fr; }
+    aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
+    main { padding: 28px 18px 80px; }
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside>
+    <div class="brand">Build OS</div>
+    <input id="search" type="search" placeholder="Search this page" autocomplete="off">
+    <div id="results"></div>
+    <div id="docs"></div>
+    <div class="label">On this page</div>
+    <nav id="toc"></nav>
+  </aside>
+  <main id="content"></main>
+</div>
+
+<script>
+const content = document.getElementById("content");
+const toc = document.getElementById("toc");
+const docsNav = document.getElementById("docs");
+let current = new URLSearchParams(location.search).get("doc") || "BUILD_OS.md";
+let observer;
+
+const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+async function loadDocList() {
+  const docs = await fetch("/_docs").then((r) => r.json()).catch(() => []);
+  if (docs.length < 2) return;
+  docsNav.innerHTML = '<div class="label">Docs</div>' + docs.map((d) =>
+    `<a href="?doc=${encodeURIComponent(d)}" class="${d === current ? "active" : ""}">${d.replace(/\.md$/i, "")}</a>`
+  ).join("");
+}
+
+async function render() {
+  let md;
+  try {
+    const res = await fetch("/" + encodeURIComponent(current));
+    if (!res.ok) throw new Error(res.status);
+    md = await res.text();
+  } catch {
+    content.innerHTML = `<p class="error">Could not load ${current}. Start the viewer with <code>node serve.mjs</code> and open http://localhost:4321.</p>`;
+    return;
+  }
+
+  const scroll = window.scrollY;
+  content.innerHTML = window.marked ? marked.parse(md) : `<pre>${md.replace(/</g, "&lt;")}</pre>`;
+
+  content.querySelectorAll("table").forEach((table) => {
+    const wrap = document.createElement("div");
+    wrap.className = "table-wrap";
+    table.replaceWith(wrap);
+    wrap.appendChild(table);
+  });
+
+  const headings = [...content.querySelectorAll("h2, h3")];
+  const seen = {};
+  toc.innerHTML = "";
+  headings.forEach((h) => {
+    let id = slug(h.textContent);
+    seen[id] = (seen[id] || 0) + 1;
+    if (seen[id] > 1) id += "-" + seen[id];
+    h.id = id;
+    const a = document.createElement("a");
+    a.href = "#" + id;
+    a.textContent = h.textContent;
+    if (h.tagName === "H3") a.className = "sub";
+    toc.appendChild(a);
+  });
+
+  observer?.disconnect();
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      toc.querySelectorAll("a").forEach((a) =>
+        a.classList.toggle("active", a.getAttribute("href") === "#" + entry.target.id));
+    });
+  }, { rootMargin: "0px 0px -75% 0px" });
+  headings.forEach((h) => observer.observe(h));
+
+  const title = content.querySelector("h1");
+  if (title) document.title = title.textContent;
+  window.scrollTo(0, scroll);
+  runSearch();
+}
+
+const search = document.getElementById("search");
+const results = document.getElementById("results");
+
+// Plain keyword match over paragraphs, list items and table rows.
+function runSearch() {
+  const query = search.value.trim().replace(/^[/$]/, "").toLowerCase();
+  results.innerHTML = "";
+  if (query.length < 2) return;
+
+  let heading = "";
+  let count = 0;
+  for (const el of content.querySelectorAll("h1, h2, h3, p, li, tr")) {
+    if (/^H[1-3]$/.test(el.tagName)) heading = el.textContent;
+    if (el.tagName === "P" && el.closest("li")) continue;
+    if (el.tagName === "TR" && el.querySelector("th")) continue;
+
+    const text = el.textContent.replace(/\s+/g, " ").trim();
+    const at = text.toLowerCase().indexOf(query);
+    if (at === -1) continue;
+    if (++count > 15) break;
+
+    const start = Math.max(0, at - 30);
+    const link = document.createElement("a");
+    link.href = "#";
+    const where = document.createElement("span");
+    where.className = "where";
+    where.textContent = heading;
+    const snippet = document.createElement("span");
+    snippet.className = "snippet";
+    const mark = document.createElement("mark");
+    mark.textContent = text.slice(at, at + query.length);
+    snippet.append((start > 0 ? "…" : "") + text.slice(start, at), mark, text.slice(at + query.length, at + query.length + 60));
+    link.append(where, snippet);
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      el.scrollIntoView({ block: "center" });
+      el.classList.add("flash");
+      setTimeout(() => el.classList.remove("flash"), 1600);
+    });
+    results.appendChild(link);
+  }
+  if (!count) results.innerHTML = '<div class="none">No matches</div>';
+}
+
+search.addEventListener("input", runSearch);
+search.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") results.querySelector("a")?.click();
+});
+
+loadDocList();
+render().then(() => {
+  if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+});
+// Pick up edits to the markdown when you come back to the tab.
+window.addEventListener("focus", render);
+// Tell the viewer this page is still open; it shuts down a few minutes after the last ping.
+setInterval(() => fetch("/_ping").catch(() => {}), 20000);
+</script>
+</body>
+</html>
