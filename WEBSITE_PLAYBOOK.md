@@ -4,7 +4,7 @@ How I take a client website from first conversation to handover.
 
 **This builds on How I Work** (`HOW_I_WORK.md`), which holds the rules for every kind of work: how to talk to me, product sense first, one chat per phase, slow steps wait for me, and the working principles. This playbook holds only what is different or extra for a client website. Where the two differ, this playbook says so, and it wins for client websites.
 
-Status: draft 1, written 2026-10-06. Not yet used on a client. Compiled from aquai, kapip, aumplus, cisqo-white, lizen-website and web-studio. Section 13 lists where each part came from, section 12 lists what is still undecided.
+Status: draft 1, written 2026-10-06. Not yet used on a client. An AI loads it through the `website-playbook` skill when the work is a client website. Compiled from aquai, kapip, aumplus, cisqo-white, lizen-website and web-studio. Section 13 lists where each part came from, section 12 lists what is still undecided.
 
 ## 1. How to use this
 
@@ -331,8 +331,7 @@ The `0.copy-this-skill-folder-content` folders were emptied on 2026-10-12; one s
 | Analytics tool | None chosen |
 | Performance budget numbers | None set. Needs real measurements from a live site first. |
 | web-studio: keep the app, or fold its content in here? | Content folded in; app left alone |
-| Should this become a skill or command, not only a doc? | Doc first; decide after one real project |
-| How does an AI get to read this playbook? | It is not loaded anywhere today; it is a page for me. Options: a line in each client project's instruction file, or a skill in the shared home. |
+| Should the stages become separate commands? | Not yet. Since 2026-10-12 the whole playbook loads through one skill, `website-playbook`, which reads this file. Decide about per-stage commands after one real project. |
 
 ## 13. Where each part came from
 

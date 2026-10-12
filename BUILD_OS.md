@@ -8,7 +8,7 @@ To read it in the browser, open the Start Menu, type "Build OS" and press Enter.
 
 The same viewer has a Projects page in the sidebar: every project folder under `D:\FounderMode`, read live from disk, most recently changed first.
 
-Other pages in the sidebar: Website Playbook (how I take a client website from first conversation to handover), How I Work (my standing instructions for any AI tool), and Claude Instructions (a live view of `~/.claude/CLAUDE.md`).
+Other pages in the sidebar: Website Playbook (how I take a client website from first conversation to handover), Content Playbook (how I turn an app into reels and X posts), How I Work (my standing instructions for any AI tool), and Claude Instructions (a live view of `~/.claude/CLAUDE.md`).
 
 ## The big picture
 
@@ -55,8 +55,12 @@ This matches how I already work in Codex: one new chat per phase, started with `
 | Layer | What | When an AI reads it |
 |---|---|---|
 | Base | `HOW_I_WORK.md`: the rules for every piece of work | Every chat |
-| Playbooks | One per kind of work. Today: the Website Playbook, for client websites | Only when doing that kind of work. Not wired up yet; today it is a page for me |
+| Playbooks | One per kind of work. Today: the Website Playbook, for client websites, and the Content Playbook, for reels and X posts about an app | Only when doing that kind of work. Each playbook has a small skill that tells the AI to read the playbook file; the skill does not copy it |
 | Project files | `product_sense.md`, `STATUS.md` and the like: this project's facts | In that project |
+
+To add a playbook: write `NAME_PLAYBOOK.md` in this folder, add a folder under `skills\` with a short `SKILL.md` that points at it, and link that folder into `~/.agents/skills` and `~/.claude/skills`. `skills\website-playbook` is the example to copy.
+
+The Content Playbook is built the other way round, because it began as a working skill: its rules are in `skills\showcase\`, what it remembers is in `library\showcase\`, and `CONTENT_PLAYBOOK.md` is the map for me.
 
 A playbook never repeats the base. It opens by saying it builds on How I Work, and holds only what is different or extra for that kind of work, including any change to the product-sense steps.
 
@@ -110,6 +114,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `/copywriting` | Writes or improves marketing copy | Everywhere |
 | `/showcase` | Reel ideas and hooks, or X posts, for a finished app | Everywhere |
 | `/frontend-slides` | Builds an animated HTML presentation, or converts a PowerPoint file | Everywhere |
+| `/website-playbook` | Loads the Website Playbook, works out which stage the project is in, and checks the gate before it. It also loads by itself when the work is a client website | Everywhere, and in Codex |
 | `/interface-design`, `/frontend-design` | Design skills, see the Design table above | Everywhere |
 | `/impeccable` | Design critique, audit, polish and more | caman only |
 | `/vercel:deploy`, `/vercel:env`, `/vercel:status`, `/vercel:bootstrap` | Vercel project actions | Everywhere, via the Vercel plugin |
@@ -127,11 +132,12 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `interface-design` | skill | same | dammyjay93/interface-design |
 | `vercel-react-best-practices` | skill | same | vercel-labs/agent-skills |
 | `writing-plans` | skill | same | obra/superpowers |
-| `showcase` | skill | `D:\FounderMode\Apps\showcase\skill`, linked | own |
+| `showcase` | skill | `Apps\build_os\skills\showcase`, linked into both tools. Moved here on 2026-10-12 from its own project | own |
 | `learn` | skill | `~/.agents/skills`, linked, since 2026-10-12 | own |
 | `humanizer` | skill | same, since 2026-10-12 | not in the lock file |
 | `frontend-slides` | skill | same, since 2026-10-12; added 2026-10-09 | not in the lock file |
 | `teach` 0.6.3 | skill | `~/.claude/skills/teach`, copied from the Codex install on 2026-10-12 | udayanwalvekar/teach |
+| `website-playbook` | skill | `Apps\build_os\skills\website-playbook`, linked into both tools, since 2026-10-12 | own |
 | `frontend-design` 1.1.0 | plugin, switched off on 2026-10-12 | `~/.claude/plugins` | anthropics/claude-code |
 | `ui-ux-pro-max` 2.13.0 | plugin, 7 skills | `~/.claude/plugins` | nextlevelbuilder/ui-ux-pro-max-skill |
 | `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in the 48 Next.js projects | `~/.claude/plugins` | claude-plugins-official |
@@ -141,7 +147,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 
 The first five linked skills are tracked in `~/skills-lock.json`.
 
-**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
+**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. Two skills I wrote myself, `showcase` and `website-playbook`, have their real home in `Apps\build_os\skills` so they are kept in git, and both tools link to that. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
 
 On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were moved into `HOW_I_WORK.md`, word for word. That includes the three added since the first inventory: the product-sense pass, stating the pain before a new feature, and agreeing the hero concept. One rule stayed behind because it names a Claude Code setting (running long commands in the background). The old file is saved at `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move`.
 
@@ -393,6 +399,7 @@ Made on 2026-10-12 while changing the setup. Each one is the old version of some
 |---|---|---|---|
 | Old `CLAUDE.md`, with all 14 rules in it | `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move` | Moving the rules into `HOW_I_WORK.md` | A few real chats have followed the shared file |
 | Old `learn`, `humanizer` and `frontend-slides` folders | `~/.claude/backups/skills-moved-2026-10-12` | Moving those skills to the one shared home | Each of the three has been used once from its new place |
+| The old showcase project, with its git history and about ten changes that were never committed there | `D:\FounderMode\.retired\showcase-2026-10-12` | Moving the showcase skill and library into build_os | `/showcase` has been run once from its new home on a real app. Its GitHub repo, `HarshK99/showcase`, is older than this folder; archive or delete that separately |
 | Old Codex instruction file | `~/.codex/AGENTS.md.backup-2026-10-12` | Replacing Codex's own rules with a copy of the shared file | Codex has been seen following the copy, and its two missing details are either added to the shared file or dropped |
 
 Not backed up, because nothing was lost:
