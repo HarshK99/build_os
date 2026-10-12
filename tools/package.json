@@ -1,0 +1,9 @@
+{
+  "name": "build-os-tools",
+  "private": true,
+  "type": "module",
+  "description": "Shared helpers that every project calls, so no project installs its own copy.",
+  "dependencies": {
+    "playwright-core": "1.62.1"
+  }
+}

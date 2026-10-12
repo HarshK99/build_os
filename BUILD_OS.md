@@ -50,6 +50,16 @@ This matches how I already work in Codex: one new chat per phase, started with `
 - The plan file is the handoff. Sonnet does well when the plan has already made the decisions.
 - Short sessions are cheaper than long ones, because every turn re-reads the whole history.
 
+### The three layers
+
+| Layer | What | When an AI reads it |
+|---|---|---|
+| Base | `HOW_I_WORK.md`: the rules for every piece of work | Every chat |
+| Playbooks | One per kind of work. Today: the Website Playbook, for client websites | Only when doing that kind of work. Not wired up yet; today it is a page for me |
+| Project files | `product_sense.md`, `STATUS.md` and the like: this project's facts | In that project |
+
+A playbook never repeats the base. It opens by saying it builds on How I Work, and holds only what is different or extra for that kind of work, including any change to the product-sense steps.
+
 ### Starting a new project
 
 1. Do the product-sense pass first and save it as `docs/product_sense.md`. `HOW_I_WORK.md` has the steps.
@@ -85,6 +95,7 @@ Two rules now sit on top of this table. For a marketing page, `HOW_I_WORK.md` sa
 | Reel ideas or X posts for a finished app | `showcase` |
 | A presentation or slide deck as a web page | `frontend-slides` |
 | React and Next.js performance | `vercel-react-best-practices` |
+| Looking at a page, or taking a screenshot | The shared tool: `node D:\FounderMode\Apps\build_os\tools\shot.mjs [route]`, run from the project's folder. Edge by default, `--chromium` when I say so. `HOW_I_WORK.md` has the rules |
 | Starting a project, or adding a feature | No skill. `HOW_I_WORK.md` requires a `product_sense.md` first, and the pain written down before any new feature |
 
 ### Commands I can type
@@ -148,6 +159,24 @@ On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were mo
 | Buildweek: `0.copy-this-skill-folder-content` | the one remaining copy of `convex-auth`, kept because it exists nowhere else |
 
 Until 2026-10-12, four Buildweek projects and two `0.copy-this-skill-folder-content` template folders each held copies of six skills. Thirty-five of those copies matched their originals file for file and were deleted. Each of the six places still has a `skills-lock.json`, which records where the skills came from.
+
+### Browsers for automated use
+
+Playwright is the tool that drives a browser from a script. Each version of it downloads its own matching Chromium into `D:\Dev\Playwright`.
+
+One Chromium build is kept, number 1234, about 0.7 GB. Everything that drives a browser uses it:
+
+| Uses it | Playwright version |
+|---|---|
+| clicky-scrapper | 1.62.1 |
+| durgsta | 1.62.1, updated from 1.57.0 on 2026-10-12 |
+| pg-essays-pdf | 1.62.0, in its own Python environment |
+| website-content-scrapper | 1.62.0, through the Python 3.11 install, updated from 1.61.0 on 2026-10-12 |
+| The shared screenshot tool, when asked for Chromium | 1.62.1 |
+
+durgsta and website-content-scrapper were updated to match but not run afterwards; I am not using them now and will fix anything deeper when I next do. A new project that needs Playwright should pin the same version, or it will download another build.
+
+On 2026-10-12 four older Chromium builds and an old Puppeteer browser were deleted, about 3.6 GB in all. assam-floods-map still has a leftover Playwright in its `node_modules` that expects a deleted build; nothing in that project uses it. kapip's own screenshot script and its Playwright install were removed, and a leftover check script in assam-floods-map. Screenshots now go through one tool in `build_os\tools`, which uses the Edge already on the laptop. Before that, no instruction file mentioned how to look at a page; it was said in each chat.
 
 ### Product-sense files
 

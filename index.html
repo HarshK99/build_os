@@ -106,7 +106,7 @@
   td.nowrap { white-space: nowrap; }
 
   @media (max-width: 860px) {
-    .layout { grid-template-columns: 1fr; }
+    .layout { grid-template-columns: minmax(0, 1fr); }
     aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
     main { padding: 28px 18px 80px; }
   }

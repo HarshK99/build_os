@@ -13,6 +13,7 @@ The document covers which tool and skill to use when, what is installed where (C
 | `HOW_I_WORK.md` | My standing instructions for any AI tool: how to talk to me, one chat per phase, and which steps wait for me. `~/.claude/CLAUDE.md` pulls this file in by reference, so this folder must not be moved without updating that line. |
 | `product_sense.md` | Why this project exists: goal, user, the decision it serves, the pains picked, the first version and how success is measured. |
 | `sync-codex.mjs` | Rewrites Codex's instruction file (`~/.codex/AGENTS.md`) as a copy of `HOW_I_WORK.md`. Run it after changing that file: `node sync-codex.mjs`. |
+| `tools/shot.mjs` | The shared screenshot tool every project calls, so none installs its own. Needs `npm install` once inside `tools/`. Its options are in the comments at the top of the file. |
 | `index.html` | The reading page: sidebar of sections, keyword search, light and dark mode. |
 | `serve.mjs` | A small local server that gives the page the markdown and scans the project folders. No dependencies. |
 | `launch.ps1` | Starts the server hidden if it is not running, then opens the page. |
