@@ -232,6 +232,15 @@ Things observed about the build system itself. Add the date and the project. Pro
 | before 2026-10 | caman | `/impeccable critique` gave a useful top finding; a full `/impeccable` redesign was rejected outright |
 | 2026-10-05 | build_os | A project-only skill is invisible elsewhere; check this inventory before assuming a skill is available |
 
+### Design results log
+
+One line per design task. Claude is told to offer this line when a design task ends. After three or four entries, correct the Design table in section 2, and switch off any skill that keeps losing.
+
+| Date | Project | Task | Skill used | Good? | Why |
+|---|---|---|---|---|---|
+| before 2026-10 | caman | Critique of existing screens | `impeccable` (critique) | Yes | Its top finding was useful |
+| before 2026-10 | caman | Full redesign | `impeccable` (new work) | No | Rejected outright |
+
 ## 6. Open decisions
 
 | Decision | Recommendation |
@@ -243,7 +252,7 @@ Things observed about the build system itself. Add the date and the project. Pro
 | Default model: stay on `opus` or switch to `opusplan`? | Try `opusplan` on the next project and record the result in section 5. |
 | One install method for all skills? | Decide after the cleanup above. |
 | How long to keep chats? | Raised from 30 to 365 days on 2026-10-12, as a holding step. Still to decide: delete a project's chats once its documentation is done, or keep everything. See section 7. |
-| Should build_os have a `product_sense.md`? | Yes, a short one. The rule in `HOW_I_WORK.md` covers every project, and this one was started before the rule existed. |
+| Should build_os have a `product_sense.md`? | Done on 2026-10-12. See the Product Sense page. Main goal: a repeatable way of building that any AI follows. Picked pains: the AI builds before the thinking is agreed, and not knowing which skill to use. |
 
 ## 7. Chats
 
@@ -280,7 +289,9 @@ Proposed rule, not yet agreed: before a project goes quiet, run `learn` and save
 
 ## 8. What to do next
 
-Suggestions in the order I would do them. Checked on 2026-10-12: items 1 and 2 are started, the rest are untouched.
+The Product Sense page now sets the priority. Its first version was made on 2026-10-12: tighter product-sense wording, skill-picking rules for Claude, and a design results log. What matters next is the measure: over my next three projects or features, did the AI ask before building, and did it pick the design skill the rules say?
+
+The list below is everything else, in the order I would do it. Most of it serves the side goal and is parked until then.
 
 1. **Decide the chat rule.** Retention was raised to 365 days on 2026-10-12, so nothing is being lost while this is open. The idea to settle: once a project's documentation is done (`product_sense.md`, plans, `learnings.md`), its chats can go; until then they stay.
 2. **Finish the shared instructions.** `HOW_I_WORK.md` exists and Claude Code points at it. The universal rules have been moved in and it loads in a fresh chat. Still to do: polish the wording with use, and give Codex a copy in place of its own older rules.
@@ -293,8 +304,7 @@ Suggestions in the order I would do them. Checked on 2026-10-12: items 1 and 2 a
 9. **Decide what to do with the Codex chats.** They are the only record of work before September. Keep them, or pull out what matters and then clear them.
 10. **Finish the inventory:** per-project `CLAUDE.md`, `AGENTS.md` and `learnings.md` files, the `.trash` folder in the skills folder, and what "Opportunity Dashboard" opens.
 11. **Keep a copy of the PowerShell profile in this repo,** so the terminal commands in section 9 survive a reset.
-12. **Write a short `product_sense.md` for build_os:** who it is for, the one decision it serves, and what would count as it working.
-13. **Only after the above,** decide whether anything else here should become a skill or a `CLAUDE.md` line.
+12. **Only after the above,** decide whether anything else here should become a skill or a `CLAUDE.md` line.
 
 ## 9. Shortcuts on this machine
 
