@@ -13,6 +13,8 @@ The document covers which tool and skill to use when, what is installed where (C
 | `HOW_I_WORK.md` | My standing instructions for any AI tool: how to talk to me, one chat per phase, and which steps wait for me. `~/.claude/CLAUDE.md` pulls this file in by reference, so this folder must not be moved without updating that line. |
 | `product_sense.md` | Why this project exists: goal, user, the decision it serves, the pains picked, the first version and how success is measured. |
 | `sync-codex.mjs` | Rewrites Codex's instruction file (`~/.codex/AGENTS.md`) as a copy of `HOW_I_WORK.md`. Run it after changing that file: `node sync-codex.mjs`. |
+| `IDEA_PLAYBOOK.md` | The idea playbook: five steps from "I don't know what to build" to one idea ready for a product-sense pass. |
+| `skills/idea-playbook/` | A small skill that tells an AI to read `IDEA_PLAYBOOK.md`. Linked into both tools. |
 | `CONTENT_PLAYBOOK.md` | The content playbook: how an app becomes reels and X posts. A map of the `showcase` skill. |
 | `skills/showcase/` | The showcase skill: its instructions, one file per mode. Linked into `~/.agents/skills` and `~/.claude/skills`. |
 | `library/showcase/` | What the showcase skill remembers: the voice guide, filed reels, and one folder per app. The skill writes here. |

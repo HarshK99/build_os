@@ -8,7 +8,7 @@ To read it in the browser, open the Start Menu, type "Build OS" and press Enter.
 
 The same viewer has a Projects page in the sidebar: every project folder under `D:\FounderMode`, read live from disk, most recently changed first.
 
-Other pages in the sidebar: Website Playbook (how I take a client website from first conversation to handover), Content Playbook (how I turn an app into reels and X posts), How I Work (my standing instructions for any AI tool), and Claude Instructions (a live view of `~/.claude/CLAUDE.md`).
+Other pages in the sidebar: Idea Playbook (how I find and choose what to build), Website Playbook (how I take a client website from first conversation to handover), Content Playbook (how I turn an app into reels and X posts), How I Work (my standing instructions for any AI tool), and Claude Instructions (a live view of `~/.claude/CLAUDE.md`).
 
 ## The big picture
 
@@ -55,7 +55,7 @@ This matches how I already work in Codex: one new chat per phase, started with `
 | Layer | What | When an AI reads it |
 |---|---|---|
 | Base | `HOW_I_WORK.md`: the rules for every piece of work | Every chat |
-| Playbooks | One per kind of work. Today: the Website Playbook, for client websites, and the Content Playbook, for reels and X posts about an app | Only when doing that kind of work. Each playbook has a small skill that tells the AI to read the playbook file; the skill does not copy it |
+| Playbooks | One per kind of work. Today: the Idea Playbook, for finding what to build; the Website Playbook, for client websites; and the Content Playbook, for reels and X posts about an app | Only when doing that kind of work. Each playbook has a small skill that tells the AI to read the playbook file; the skill does not copy it |
 | Project files | `product_sense.md`, `STATUS.md` and the like: this project's facts | In that project |
 
 To add a playbook: write `NAME_PLAYBOOK.md` in this folder, add a folder under `skills\` with a short `SKILL.md` that points at it, and link that folder into `~/.agents/skills` and `~/.claude/skills`. `skills\website-playbook` is the example to copy.
@@ -92,10 +92,10 @@ Two rules now sit on top of this table. For a marketing page, `HOW_I_WORK.md` sa
 
 | Task | Use |
 |---|---|
-| Multi-step feature, before coding | `writing-plans` |
+| A very detailed build plan, when I ask for one | `writing-plans`. Optional, and not part of How I Work or any playbook (decided 2026-10-12). It is from obra/superpowers, plans test-first in small single-sitting steps, and saves to `docs/superpowers/plans/`, none of which matches my phase rules. Left installed; if an AI reaches for it unasked, I correct it |
 | End-of-session process learnings | `learn` (writes the project's `learnings.md`) |
 | Marketing copy | `copywriting` |
-| Removing AI tone from prose | `humanizer` |
+| Removing AI tone from final output and copy: client-facing text, posts, anything published | `humanizer`. Not for docs, skills or instructions (decided 2026-10-12) |
 | Reel ideas or X posts for a finished app | `showcase` |
 | A presentation or slide deck as a web page | `frontend-slides` |
 | React and Next.js performance | `vercel-react-best-practices` |
@@ -114,6 +114,8 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `/copywriting` | Writes or improves marketing copy | Everywhere |
 | `/showcase` | Reel ideas and hooks, or X posts, for a finished app | Everywhere |
 | `/frontend-slides` | Builds an animated HTML presentation, or converts a PowerPoint file | Everywhere |
+| `/idea-playbook` | Loads the Idea Playbook and works out which of its five steps a hunt has reached. It also loads by itself when I say I don't know what to build | Everywhere, and in Codex |
+| `/customer-research` | Reads what people say in public (forums, Reddit, review sites) and ranks their complaints, or digests interviews and reviews I already have. Step B of the Idea Playbook | Everywhere, and in Codex |
 | `/website-playbook` | Loads the Website Playbook, works out which stage the project is in, and checks the gate before it. It also loads by itself when the work is a client website | Everywhere, and in Codex |
 | `/interface-design`, `/frontend-design` | Design skills, see the Design table above | Everywhere |
 | `/impeccable` | Design critique, audit, polish and more | caman only |
@@ -138,6 +140,8 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `frontend-slides` | skill | same, since 2026-10-12; added 2026-10-09 | not in the lock file |
 | `teach` 0.6.3 | skill | `~/.claude/skills/teach`, copied from the Codex install on 2026-10-12 | udayanwalvekar/teach |
 | `website-playbook` | skill | `Apps\build_os\skills\website-playbook`, linked into both tools, since 2026-10-12 | own |
+| `idea-playbook` | skill | `Apps\build_os\skills\idea-playbook`, linked into both tools, since 2026-10-12 | own |
+| `customer-research` 2.0.4 | skill | `~/.agents/skills`, linked, since 2026-10-12 | coreyhaines31/marketingskills, the same source as `copywriting` |
 | `frontend-design` 1.1.0 | plugin, switched off on 2026-10-12 | `~/.claude/plugins` | anthropics/claude-code |
 | `ui-ux-pro-max` 2.13.0 | plugin, 7 skills | `~/.claude/plugins` | nextlevelbuilder/ui-ux-pro-max-skill |
 | `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in 39 Next.js projects, and off on purpose in 9 client and static sites | `~/.claude/plugins` | claude-plugins-official |
@@ -145,9 +149,9 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | How I Work | shared instructions for any AI tool | `Apps\build_os\HOW_I_WORK.md`, pulled into `CLAUDE.md` by an `@` reference line | own |
 | Claude-only rules, 4 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-12 | own |
 
-The first five linked skills are tracked in `~/skills-lock.json`.
+The first five linked skills are tracked in `~/skills-lock.json`. `customer-research` was installed with the same installer on 2026-10-12, but the installer now keeps its record in a different file, `~/.agents/.skill-lock.json`, so there are two lock files.
 
-**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. Two skills I wrote myself, `showcase` and `website-playbook`, have their real home in `Apps\build_os\skills` so they are kept in git, and both tools link to that. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
+**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. Three skills I wrote myself, `showcase`, `website-playbook` and `idea-playbook`, have their real home in `Apps\build_os\skills` so they are kept in git, and both tools link to that. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
 
 On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were moved into `HOW_I_WORK.md`, word for word. That includes the three added since the first inventory: the product-sense pass, stating the pain before a new feature, and agreeing the hero concept. One rule stayed behind because it names a Claude Code setting (running long commands in the background). The old file is saved at `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move`.
 
@@ -272,6 +276,19 @@ Things observed about the build system itself. Add the date and the project. Pro
 |---|---|---|
 | before 2026-10 | caman | `/impeccable critique` gave a useful top finding; a full `/impeccable` redesign was rejected outright |
 | 2026-10-05 | build_os | A project-only skill is invisible elsewhere; check this inventory before assuming a skill is available |
+
+### Where a learning goes
+
+| The learning is about | It goes in | How |
+|---|---|---|
+| This project only | The project's `learnings.md` | `/learn` at the end of a session |
+| One kind of work, such as client websites | That kind's playbook in this folder | `/learn` names it as a candidate; I approve; it is added there |
+| Every kind of work | `HOW_I_WORK.md`, under "Working principles" | The same, then Codex's copy is refreshed |
+| The build system itself | The table above | By hand |
+
+The `learn` skill was changed on 2026-10-12 to follow this. Before that, its last step pointed at its author's own folder, so a learning that applied beyond one project had nowhere to go. The installed skill matches the latest version from its source (udayangx/codex-plugins, 1.0.0, last changed 2026-08-31) apart from two local edits: the `/learn` wording in its description, and this last step. Updating it from the source would undo both. Codex's own plugin copy of `learn` still has the old step.
+
+Not done yet: a review of the seven existing project `learnings.md` files, 66 principles in all, for anything worth promoting. They are in kapip_website (19), jobs-gmail-dashboard (11), hackathons (10), web-studio (9), namma (6), ne_synth (6) and bandwidth (5).
 
 ### Design results log
 
