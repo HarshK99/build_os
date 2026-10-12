@@ -2,33 +2,35 @@
 
 The one place that records how I build, which tool to use when, where everything is installed, and what should change.
 
-Last inventory: 2026-10-05. This doc is for reading. Nothing here is loaded into Claude sessions, so it costs no tokens.
+Last inventory: 2026-10-12 (first one: 2026-10-05). This doc is for reading. Nothing here is loaded into Claude sessions, so it costs no tokens.
 
 To read it in the browser, open the Start Menu, type "Build OS" and press Enter. The viewer starts hidden, opens http://localhost:4321, and stops itself a few minutes after the page is closed.
 
 The same viewer has a Projects page in the sidebar: every project folder under `D:\FounderMode`, read live from disk, most recently changed first.
 
+Other pages in the sidebar: Website Playbook (how I take a client website from first conversation to handover), How I Work (my standing instructions for any AI tool), and Claude Instructions (a live view of `~/.claude/CLAUDE.md`).
+
 ## The big picture
 
-Two AI coding tools are set up on this machine. They do not share anything: instructions, skills and chats are separate for each. Claude Code is the main one going forward.
+Two AI coding tools are set up on this machine. They do not share anything: instructions, skills and chats are separate for each. Claude Code is the main one, and Codex is still in use.
 
 | | Claude Code | Codex |
 |---|---|---|
-| Role | Main tool from now on | Used June to September 2026 |
-| Default model | Opus | gpt-6-astra, medium reasoning |
-| My standing instructions | `~/.claude/CLAUDE.md`: 11 working principles | `~/.codex/AGENTS.md`: how to talk to me, phases across chats, no builds or tests unless asked |
-| Global skills | 8 of my own, plus 16 synced from claude.ai | 6 built in |
-| Plugins | 3: `vercel`, `ui-ux-pro-max`, `frontend-design` | 4: `teach`, `learn`, `work-pets`, `plugin-management` |
-| Saved chats | 89, about 205 MB, across 19 projects | 106, about 645 MB, across 24 projects |
-| Chat retention | Deleted after about 30 days | Kept; oldest is from 2026-06-25 |
-| Other saved material | 14 plan files, 33 memory notes | 1 memory note |
+| Role | Main tool | Still used; newest chat is from 2026-10-12 |
+| Default model | Opus | gpt-6-luna |
+| My standing instructions | The shared `HOW_I_WORK.md`, pulled in by reference from `~/.claude/CLAUDE.md`, which itself now holds one Claude-only rule | `~/.codex/AGENTS.md`: how to talk to me, phases across chats, no builds or tests unless asked |
+| Global skills | 9 of my own, plus 16 synced from claude.ai | 6 built in |
+| Plugins | 3 installed: `ui-ux-pro-max` on everywhere, `vercel` on per project, `frontend-design` off | 4: `teach`, `learn`, `work-pets`, `plugin-management` |
+| Saved chats | 65, about 275 MB, across 25 projects | 108, about 646 MB, across 26 projects |
+| Chat retention | Kept for 365 days since 2026-10-12; it was 30, see section 7 | Kept; oldest is from 2026-06-25 |
+| Other saved material | 14 plan files, 23 memory notes (index files not counted) | 1 memory note |
 | Projects with their own skills | caman, listing-hunt, lizen-website, assignment | 4 Buildweek projects (copied skill folder) |
 
 Three things stand out:
 
-1. **The way I like to work is written down for Codex only.** Plain words, one question at a time, and one chat per phase with a handoff document all live in `~/.codex/AGENTS.md`. Claude Code has never seen them.
+1. **The way I like to work now has one shared home.** Plain words, one question at a time, and one chat per phase with a status file are in `HOW_I_WORK.md` in this folder. Claude Code reads it by reference since 2026-10-12. Codex still has its own older copy of the same rules in `~/.codex/AGENTS.md`.
 2. **The same skills exist in several places:** global, plugin, per-project copies, and Codex. Sections 3 and 4 list them.
-3. **Chats are the least organised part.** About 195 chats and 850 MB across both tools, with nothing marking which ones matter.
+3. **Chats are the least organised part.** About 173 chats and 920 MB across both tools, with nothing marking which ones matter. Claude Code has already deleted its oldest week.
 
 ## 1. How I build
 
@@ -48,6 +50,12 @@ This matches how I already work in Codex: one new chat per phase, started with `
 - The plan file is the handoff. Sonnet does well when the plan has already made the decisions.
 - Short sessions are cheaper than long ones, because every turn re-reads the whole history.
 
+### Starting a new project
+
+1. Do the product-sense pass first and save it as `docs/product_sense.md`. `HOW_I_WORK.md` has the steps.
+2. If the project is Next.js or will go live on Vercel, turn on the Vercel plugin for it. Claude should offer; if it does not, say "turn on Vercel here". It is one small settings file in the project, and it takes effect in the next chat. Nothing is downloaded or copied.
+3. For a client website, follow the Website Playbook page.
+
 ## 2. Which tool when
 
 ### Design
@@ -64,6 +72,8 @@ One design skill leads per task. Stacking two gives conflicting direction and do
 
 How sure this is: the split comes from reading each skill's own instructions, not from comparing their output side by side. The only real evidence so far is from caman, where an `/impeccable critique` pass produced a useful top finding and an `/impeccable` full redesign was rejected outright. That is one data point; record more in section 5 as they come.
 
+Two rules now sit on top of this table. For a marketing page, `HOW_I_WORK.md` says to agree the hero idea in one line before building and never default to the split hero. For a client website, the Website Playbook page sets the full order of work.
+
 ### Everything else
 
 | Task | Use |
@@ -72,8 +82,10 @@ How sure this is: the split comes from reading each skill's own instructions, no
 | End-of-session process learnings | `learn` (writes the project's `learnings.md`) |
 | Marketing copy | `copywriting` |
 | Removing AI tone from prose | `humanizer` |
-| Reel ideas for a finished app | `showcase` |
+| Reel ideas or X posts for a finished app | `showcase` |
+| A presentation or slide deck as a web page | `frontend-slides` |
 | React and Next.js performance | `vercel-react-best-practices` |
+| Starting a project, or adding a feature | No skill. `HOW_I_WORK.md` requires a `product_sense.md` first, and the pain written down before any new feature |
 
 ### Commands I can type
 
@@ -85,7 +97,8 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `/writing-plans` | Turns a spec into a step-by-step plan before coding | Everywhere |
 | `/humanizer` | Rewrites AI-sounding text | Everywhere |
 | `/copywriting` | Writes or improves marketing copy | Everywhere |
-| `/showcase` | Reel ideas and hooks for a finished app | Everywhere |
+| `/showcase` | Reel ideas and hooks, or X posts, for a finished app | Everywhere |
+| `/frontend-slides` | Builds an animated HTML presentation, or converts a PowerPoint file | Everywhere |
 | `/interface-design`, `/frontend-design` | Design skills, see the Design table above | Everywhere |
 | `/impeccable` | Design critique, audit, polish and more | caman only |
 | `/vercel:deploy`, `/vercel:env`, `/vercel:status`, `/vercel:bootstrap` | Vercel project actions | Everywhere, via the Vercel plugin |
@@ -106,13 +119,19 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `showcase` | skill | `D:\FounderMode\Apps\showcase\skill`, linked | own |
 | `learn` | skill | `~/.claude/skills/learn` | own |
 | `humanizer` | skill | `~/.claude/skills/humanizer` | not tracked |
-| `frontend-design` 1.1.0 | plugin | `~/.claude/plugins` | anthropics/claude-code |
+| `frontend-slides` | skill | `~/.claude/skills/frontend-slides`, added 2026-10-09 | not tracked |
+| `frontend-design` 1.1.0 | plugin, switched off on 2026-10-12 | `~/.claude/plugins` | anthropics/claude-code |
 | `ui-ux-pro-max` 2.13.0 | plugin, 7 skills | `~/.claude/plugins` | nextlevelbuilder/ui-ux-pro-max-skill |
-| `vercel` 0.50.0 | plugin, about 35 skills, 3 agents, session hooks | `~/.claude/plugins` | claude-plugins-official |
+| `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in the 48 Next.js projects | `~/.claude/plugins` | claude-plugins-official |
 | 16 synced skills (pdf, docx, pptx, xlsx, deep-research and others) | skills | `~/.claude/skills/synced` | claude.ai account |
-| Working principles, 11 items | instructions | `~/.claude/CLAUDE.md` | own |
+| How I Work | shared instructions for any AI tool | `Apps\build_os\HOW_I_WORK.md`, pulled into `CLAUDE.md` by an `@` reference line | own |
+| Claude-only rules, 2 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-12 | own |
 
 The five linked skills are tracked in `~/skills-lock.json`.
+
+On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were moved into `HOW_I_WORK.md`, word for word. That includes the three added since the first inventory: the product-sense pass, stating the pain before a new feature, and agreeing the hero concept. One rule stayed behind because it names a Claude Code setting (running long commands in the background). The old file is saved at `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move`.
+
+`CLAUDE.md` also tells Claude to warn me at the start of a chat if the shared file did not load, and to try reading it directly. It checks for one fixed line near the top of `HOW_I_WORK.md` that starts "Loaded marker:", so the rest of that file can change freely; that line must stay. Tested by breaking the reference on purpose: the default model flagged the problem, the smallest model did not. Treat it as a backstop, not a guarantee.
 
 ### Project-only
 
@@ -125,6 +144,10 @@ The five linked skills are tracked in `~/skills-lock.json`.
 | assignment | skill `pm-assignment-style` |
 | Buildweek: clicky-scrapper, heyclicky, nudge_landing, what-is-water | copies of `convex-auth`, `copywriting`, `frontend-design`, `interface-design`, `vercel-react-best-practices`, `writing-plans` |
 | Buildweek and Websites: `0.copy-this-skill-folder-content` | the template those copies come from |
+
+### Product-sense files
+
+`HOW_I_WORK.md` asks for a `product_sense.md` at the start of every project. On 2026-10-12 three projects have one, all under `docs/`: hackathons, whimfree and ne_synth. build_os does not.
 
 ### Codex
 
@@ -148,9 +171,9 @@ What `~/.codex/AGENTS.md` tells Codex:
 - **Short handoffs,** written once, inside the phase commit.
 - **Agree the app's job first,** before turning a source document into features.
 
-Only the third of these has an equivalent in `~/.claude/CLAUDE.md`.
+All five are now covered by the shared `HOW_I_WORK.md`, which Claude Code reads; the fifth through its product-sense rules. Codex itself still reads only its own file.
 
-Scanned on 2026-10-05: `~/.claude`, `~/.agents`, `~/.codex`, and every folder two levels deep under `D:\FounderMode` (Apps, Websites, Buildweek, assignment, planning, Tools, Founder OS).
+Scanned on 2026-10-05 and again on 2026-10-12: `~/.claude`, `~/.agents`, `~/.codex`, and every folder two levels deep under `D:\FounderMode` (Apps, Websites, Buildweek, assignment, planning, Tools, Founder OS).
 
 Not checked: per-project `CLAUDE.md`, `AGENTS.md` and `learnings.md` files, and the `claude-skills` project folder.
 
@@ -172,9 +195,37 @@ Not checked: per-project `CLAUDE.md`, `AGENTS.md` and `learnings.md` files, and 
 14. **Codex never deletes chats.** 106 sessions and about 645 MB have built up since June; the whole `~/.codex` folder is about 1.4 GB.
 15. **The Codex `learn` prompt differs from the Claude `learn` skill.** The Codex `learn` plugin matches the Claude skill exactly; the older prompt file does not.
 
+### What changed by 2026-10-12
+
+All fifteen findings above still hold. New since then:
+
+1. **Claude Code did delete old chats.** 89 chats became 65. Every chat for kapip-website (17), bandwidth (12) and jobs-gmail-dashboard (7) is gone, along with 7 of caman's 20.
+2. **Codex is still in use.** Two new chats, the newest from 2026-10-12, and its model changed from gpt-6-astra to gpt-6-luna.
+3. **`~/.claude/CLAUDE.md` grew from 11 to 14 principles.** The communication rules and phase workflow from Codex were not among them; item 8 below fixes that.
+4. **One new global skill, `frontend-slides`.** Like `learn`, `humanizer` and `showcase`, it is not in the lock file, so four of the nine are now untracked.
+5. **A `.trash` folder appeared in `~/.claude/skills`** on 2026-10-12, holding four items. Not checked what they are.
+6. **Nothing from section 8 has been done,** apart from putting this folder under git.
+7. **A new Start Menu entry, "Opportunity Dashboard",** was added. Not checked what it opens.
+8. **Done on 2026-10-12:** chat retention raised to 365 days; the shared `HOW_I_WORK.md` created and wired into `~/.claude/CLAUDE.md`; and the 13 universal rules moved into it. A fresh test chat answered questions from the shared file, so the reference loads. Also that day: the duplicate `frontend-design` plugin was switched off, and the Vercel plugin was moved from global to per project.
+
+### Where projects are deployed
+
+Checked on 2026-10-12 across 80 project folders (parts of multi-part folders counted separately). These are signs, not proof: Vercel files in the folder, GitHub's record of who deployed the repo, and deploy scripts that mention Hostinger, `deploy-package` or a server.
+
+| Where | Projects | Examples |
+|---|---|---|
+| Vercel | 22 | caman, whimfree, bandwidth, prompt-speak, sleepx_web, namma |
+| Own server or Hostinger | 18 | kapip, aquai, aumplus, cisqo-white, lizen-website, the wavelink parts, sevenseas |
+| Web project, no sign of any host | 24 | b3_website, jbe_website, ylitix, prit_art, ne_synth |
+| Not a web project | 17 | mysearchbar, typeforme, goal-widget, the Flutter apps |
+
+- One project, accountx-master, shows both and is counted in both rows.
+- Client websites mostly go to my own server through `deploy-package`. Vercel is used mostly for my own apps.
+- A project with no GitHub repo and no Vercel link cannot be told apart from one that was never deployed.
+
 ## 5. Learnings
 
-Things observed about the build system itself. Add the date and the project. Promote an entry to `~/.claude/CLAUDE.md` once it holds across projects.
+Things observed about the build system itself. Add the date and the project. Promote an entry to `HOW_I_WORK.md` once it holds across projects.
 
 | Date | Project | Learning |
 |---|---|---|
@@ -186,36 +237,41 @@ Things observed about the build system itself. Add the date and the project. Pro
 | Decision | Recommendation |
 |---|---|
 | Make `impeccable` global, or keep it per project? | Keep it per project. Its trigger covers all UI work, so globally it would compete with the other three on every design task. |
-| Which `frontend-design` copy to keep? | Keep one, either one. |
+| Which `frontend-design` copy to keep? | Decided 2026-10-12: the skill copy. The plugin is switched off in `settings.json`, not uninstalled, so it can be turned back on. |
 | Remove the unused `ui-ux-pro-max` copy in `~/.agents/skills`? | Yes. |
-| Vercel plugin: global, or enabled only in Vercel projects? | Per project. |
+| Vercel plugin: global, or enabled only in Vercel projects? | Decided 2026-10-12: off globally, on in every Next.js project through `.claude/settings.local.json`. 48 projects have the switch. Four of them (caman, claude-skills, lizen-website, wavelink_profile) keep that file in git, so it shows there as a changed file. |
 | Default model: stay on `opus` or switch to `opusplan`? | Try `opusplan` on the next project and record the result in section 5. |
 | One install method for all skills? | Decide after the cleanup above. |
-| How to keep important chats past 30 days? | Decide before 2026-10-06, when the oldest chats start to age out. See section 7. |
+| How long to keep chats? | Raised from 30 to 365 days on 2026-10-12, as a holding step. Still to decide: delete a project's chats once its documentation is done, or keep everything. See section 7. |
+| Should build_os have a `product_sense.md`? | Yes, a short one. The rule in `HOW_I_WORK.md` covers every project, and this one was started before the rule existed. |
 
 ## 7. Chats
 
 Claude Code saves every chat as a transcript file under `~/.claude/projects/<project>/`.
 
-Snapshot on 2026-10-05: 89 chats across 19 projects, about 205 MB in total.
+Snapshot on 2026-10-12: 65 chats across 25 projects, about 275 MB in total. A week earlier it was 89 chats across 19 projects.
 
 | Project | Chats | MB | Oldest | Newest |
 |---|---|---|---|---|
-| caman | 20 | 46.2 | 2026-09-08 | 2026-10-03 |
-| kapip-website | 17 | 35.3 | 2026-09-06 | 2026-09-13 |
-| bandwidth | 12 | 6.7 | 2026-09-08 | 2026-09-18 |
-| jobs-gmail-dashboard | 7 | 15.9 | 2026-09-09 | 2026-09-10 |
-| aumplus-website | 7 | 9.3 | 2026-09-07 | 2026-09-21 |
-| cisqo-white | 6 | 55.4 | 2026-09-14 | 2026-09-14 |
-| 13 other projects | 20 | 21.0 | | |
+| caman | 13 | 40.5 | 2026-10-01 | 2026-10-03 |
+| assignment-afb | 6 | 56.8 | 2026-10-09 | 2026-10-09 |
+| cisqo-white | 6 | 76.4 | 2026-09-14 | 2026-10-06 |
+| typeforme | 4 | 2.8 | 2026-10-04 | 2026-10-10 |
+| aumplus-website | 4 | 8.8 | 2026-09-21 | 2026-09-21 |
+| assignment | 3 | 2.9 | 2026-09-23 | 2026-09-24 |
+| mysearchbar | 3 | 1.5 | 2026-10-05 | 2026-10-10 |
+| hackathons | 3 | 10.1 | 2026-10-05 | 2026-10-12 |
+| 17 other projects | 23 | 62.1 | | |
 
-- **Old chats are probably deleting themselves.** The oldest chat anywhere is 30 days old, which matches Claude Code's default of removing transcripts after 30 days. Nothing in `settings.json` overrides it. So the real job is saving the important ones, not deleting the rest.
-- **Disk space is not a problem.** 205 MB is small. The value of a cleanup is being able to find the chats that matter.
+- **Old chats delete themselves after 30 days.** On 2026-10-05 the oldest chat was from 2026-09-06; on 2026-10-12 the oldest is from 2026-09-13. Nothing in `settings.json` overrides the default. The chats for kapip-website, bandwidth and jobs-gmail-dashboard are all gone.
+- **How the deletion works:** each time Claude Code starts, it removes chats that have had no activity for longer than the `cleanupPeriodDays` setting in `~/.claude/settings.json`. With no setting, that is 30 days. It goes by age only; it does not know whether a project's documentation is done.
+- **Retention is now 365 days.** Set on 2026-10-12. Nothing more will be deleted until a chat is a year old. The chats already deleted cannot be recovered.
+- **Disk space is not a problem.** 275 MB is small. The value of a cleanup is being able to find the chats that matter.
 - **A chat is a poor long-term record.** What is worth keeping from a chat is usually a decision, a plan or a learning. Those belong in the project's plan file, its `learnings.md`, or this doc.
 
 ### Codex chats
 
-Codex saves its chats under `~/.codex/sessions` and does not delete them. Snapshot on 2026-10-05: 106 chats, about 645 MB, from 2026-06-25 to 2026-09-24, across 24 projects. These are the only chats left from before September; any Claude Code chats that old have already expired.
+Codex saves its chats under `~/.codex/sessions` and does not delete them. Snapshot on 2026-10-12: 108 chats, about 646 MB, from 2026-06-25 to 2026-10-12, across 26 projects. These are the only chats left from before mid-September; any Claude Code chats that old have expired.
 
 ### What to do with them
 
@@ -224,25 +280,25 @@ Proposed rule, not yet agreed: before a project goes quiet, run `learn` and save
 
 ## 8. What to do next
 
-Suggestions in the order I would do them. Nothing here has been done yet.
+Suggestions in the order I would do them. Checked on 2026-10-12: items 1 and 2 are started, the rest are untouched.
 
-1. **Decide which chats to keep, today.** The oldest ones reach 30 days on 2026-10-06. Either raise the retention period or run `/learn` in the projects that matter first.
-2. **Copy my working preferences from Codex into `~/.claude/CLAUDE.md`.** How to talk to me, and the phase-per-chat workflow. This is the change that will be felt most, since Claude Code is now the main tool.
-3. **Remove the duplicates.** Keep one `frontend-design`, delete the unused `ui-ux-pro-max` copy, and pick one home for `learn`. Low risk, and it makes skill selection predictable.
-4. **Turn the Vercel plugin on per project** instead of globally. This is the biggest saving in tokens per session.
+1. **Decide the chat rule.** Retention was raised to 365 days on 2026-10-12, so nothing is being lost while this is open. The idea to settle: once a project's documentation is done (`product_sense.md`, plans, `learnings.md`), its chats can go; until then they stay.
+2. **Finish the shared instructions.** `HOW_I_WORK.md` exists and Claude Code points at it. The universal rules have been moved in and it loads in a fresh chat. Still to do: polish the wording with use, and give Codex a copy in place of its own older rules.
+3. **Finish the skill tidy-up.** Done on 2026-10-12: the `frontend-design` plugin is off, so that skill shows once, and the `learn` skill now says `/learn` instead of `$learn`. Left alone on purpose: the spare `ui-ux-pro-max` and `learn` copies in `~/.agents`, which Claude does not load and Codex might. Still to do: one way of installing skills, record the four untracked ones, retire the copy-this-skill-folder templates, check the `.trash` folder.
+4. **Check the Vercel change in real use.** Done on 2026-10-12: the plugin is off globally and on in the 48 Next.js projects. Still to do: open a chat in a Next.js project and confirm the `vercel:` skills are there, and type `/context` in a non-web project to see what was saved.
 5. **Run the next project on `/model opusplan`** with a plan file and a fresh session per phase. Record in section 5 whether quality held and whether usage dropped.
 6. **Test the design split on the next UI task.** Name the skill explicitly, then record the result in section 5. After three or four entries the table in section 2 will rest on evidence.
 7. **Install `teach` into Claude Code.** It is in Codex only today. Copying the skill folder into `~/.claude/skills/teach` should be enough; it needs Python, which is installed.
 8. **Replace the copy-this-skill-folder habit.** Anything in that template that should be in every project belongs in the global install; decide where `convex-auth` goes.
 9. **Decide what to do with the Codex chats.** They are the only record of work before September. Keep them, or pull out what matters and then clear them.
-10. **Finish the inventory:** per-project `CLAUDE.md`, `AGENTS.md` and `learnings.md` files.
-11. **Put this folder under git,** so changes to the doc have a history.
-12. **Keep a copy of the PowerShell profile in this repo,** so the terminal commands in section 9 survive a reset.
+10. **Finish the inventory:** per-project `CLAUDE.md`, `AGENTS.md` and `learnings.md` files, the `.trash` folder in the skills folder, and what "Opportunity Dashboard" opens.
+11. **Keep a copy of the PowerShell profile in this repo,** so the terminal commands in section 9 survive a reset.
+12. **Write a short `product_sense.md` for build_os:** who it is for, the one decision it serves, and what would count as it working.
 13. **Only after the above,** decide whether anything else here should become a skill or a `CLAUDE.md` line.
 
 ## 9. Shortcuts on this machine
 
-Things I set up so I can get somewhere fast. Snapshot on 2026-10-05.
+Things I set up so I can get somewhere fast. Snapshot on 2026-10-12.
 
 ### Terminal commands
 
@@ -268,6 +324,7 @@ Type the name in the Start Menu, or in mysearchbar (Alt + Space).
 | Build OS | This doc and the Projects page | `Apps\build_os\launch.ps1` |
 | mysearchbar | The search bar itself | `Apps\mysearchbar\dist\mysearchbar.exe` |
 | Goal Widget | The goal widget | Installed app, built in `Apps\goal-widget` |
+| Opportunity Dashboard | Not checked | Added between 2026-10-05 and 2026-10-12 |
 
 ### Starts with Windows
 

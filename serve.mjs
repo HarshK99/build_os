@@ -4,6 +4,7 @@
 import { createServer } from "node:http";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { basename, dirname, join, resolve } from "node:path";
+import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -11,6 +12,11 @@ const port = Number(process.env.PORT) || 4321;
 const idleMs = Number(process.env.IDLE_MS) || 3 * 60 * 1000;
 // The folder whose sub-folders are listed on the Projects page: two levels up from here.
 const projectsRoot = process.env.PROJECTS_ROOT || resolve(root, "..", "..");
+// Files that live outside this folder but are shown as pages, read live so they never go stale.
+// Delete an entry to remove its page.
+const OUTSIDE_PAGES = {
+  "CLAUDE_INSTRUCTIONS.md": join(homedir(), ".claude", "CLAUDE.md"),
+};
 let lastSeen = Date.now();
 
 const send = (res, status, type, body) => {
@@ -195,13 +201,16 @@ const server = createServer(async (req, res) => {
       const docs = (await readdir(root))
         .filter((f) => f.toLowerCase().endsWith(".md") && f.toLowerCase() !== "readme.md")
         .sort();
-      return send(res, 200, "application/json", JSON.stringify(docs));
+      return send(res, 200, "application/json", JSON.stringify([...docs, ...Object.keys(OUTSIDE_PAGES)]));
     }
     if (path === "/_projects") {
       return send(res, 200, "application/json", await scanProjects());
     }
     // Only markdown files that sit directly in this folder are served.
     const name = basename(path);
+    if (path === `/${name}` && OUTSIDE_PAGES[name]) {
+      return send(res, 200, "text/markdown; charset=utf-8", await readFile(OUTSIDE_PAGES[name]));
+    }
     if (path === `/${name}` && name.toLowerCase().endsWith(".md")) {
       return send(res, 200, "text/markdown; charset=utf-8", await readFile(join(root, name)));
     }

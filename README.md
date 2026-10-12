@@ -9,6 +9,8 @@ The document covers which tool and skill to use when, what is installed where (C
 | File | What it is |
 |---|---|
 | `BUILD_OS.md` | The document itself. Edit this. |
+| `WEBSITE_PLAYBOOK.md` | The client-website playbook: seven stages from first conversation to handover. Shows as its own page in the sidebar. |
+| `HOW_I_WORK.md` | My standing instructions for any AI tool: how to talk to me, one chat per phase, and which steps wait for me. `~/.claude/CLAUDE.md` pulls this file in by reference, so this folder must not be moved without updating that line. |
 | `index.html` | The reading page: sidebar of sections, keyword search, light and dark mode. |
 | `serve.mjs` | A small local server that gives the page the markdown and scans the project folders. No dependencies. |
 | `launch.ps1` | Starts the server hidden if it is not running, then opens the page. |
