@@ -4,7 +4,7 @@ How I take a client website from first conversation to handover.
 
 **This builds on How I Work** (`HOW_I_WORK.md`), which holds the rules for every kind of work: how to talk to me, product sense first, one chat per phase, slow steps wait for me, and the working principles. This playbook holds only what is different or extra for a client website. Where the two differ, this playbook says so, and it wins for client websites.
 
-Status: draft 1, written 2026-10-06. Not yet used on a client. An AI loads it through the `website-playbook` skill when the work is a client website. Compiled from aquai, kapip, aumplus, cisqo-white, lizen-website and web-studio. Section 13 lists where each part came from, section 12 lists what is still undecided.
+Status: draft 1, written 2026-10-06. Not yet used on a client. An AI loads it through the `website-playbook` skill when the work is a client website. Compiled from aquai, kapip, aumplus, cisqo-white, lizen-website and web-studio. Section 13 lists where each part came from, and section 14 lists everything still pending.
 
 ## 1. How to use this
 
@@ -78,7 +78,7 @@ Goal, main visitor, the one action, where that visitor gets stuck today, which o
 
 - **The answers come from the client, not from me.** I pass them on. Anything neither of us knows is an open question.
 - **"The one decision the product serves" becomes "the one action the visitor takes".**
-- **"Several solutions" and "prioritise" are not done here.** They happen in stage 2, where the sitemap and the out-of-scope list are the result.
+- **"Several solutions" and "prioritise" are not done here.** They happen at the start of stage 2, where two or three shapes for the site are compared before the sitemap is fixed.
 - **Everything else is the same,** including asking one step at a time and never filling the file in alone.
 
 ### Gate
@@ -94,9 +94,13 @@ Role: product manager. Output: `docs/BRIEF.md` or `docs/PRD.md`.
 | | Light | Full |
 |---|---|---|
 | Fits | Brochure site, up to about six pages, no catalogue | Catalogue or many pages generated from data |
-| Docs | One `BRIEF.md` | `PRD.md` and `DESIGN.md` |
+| Docs | `BRIEF.md` and a short `DESIGN.md` | `PRD.md` and `DESIGN.md` |
 | Data | One `data/content.ts` | Typed data files with access helpers |
 | Move up when | A page type starts repeating from data | |
+
+### Before fixing the sitemap
+
+Lay out two or three shapes the site could take, for example one long page, a few pages, or a catalogue generated from data. Say which one and why, in a few lines. This is where the "several solutions" and "prioritise" steps of the product-sense pass happen for a client site, and the choice goes at the top of the spec.
 
 ### The spec must contain
 
@@ -156,6 +160,20 @@ Role: designer. Output: `docs/DESIGN.md`.
 
 One design skill leads, as my tool instructions say. For a client website that is `frontend-design`; `ui-ux-pro-max` is only for lookups such as a palette or a font pairing. Before any wireframe, agree the hero idea in one line. How I Work lists the hero patterns that are banned unless asked for.
 
+### Which design skill, where
+
+`frontend-design` designs. The other two check. A review is a separate task from the design, so this keeps to one design skill per task.
+
+| Stage | Skill | Job |
+|---|---|---|
+| 4, Design direction | `frontend-design` | Leads. Sets the feeling, the type and the one signature element |
+| 4, Design direction | `ui-ux-pro-max` | Looked up only: a palette or a font pairing to consider. It never picks the style, because it picks by type of business |
+| 5, Build, once the home page exists | `impeccable critique` | A second opinion on what is built, before other pages copy its mistakes |
+| 5, Build, polish phase | `ui-ux-pro-max` | Its usability rules as a checklist: contrast, tap sizes, forms |
+| 5 and 6, polish and QA | `impeccable audit` and `polish` | Technical checks and a final pass |
+
+Decided 2026-10-12 from reading the skills, not from comparing their results. `impeccable` is only installed in caman, so a client site can use it only once it is added to that project. It also keeps its own `PRODUCT.md` and `DESIGN.md`; how those sit beside this playbook's files is untested.
+
 ### Steps
 
 1. Start from the Impression answer in stage 1. Write the feeling in three or four words.
@@ -210,6 +228,7 @@ Phases follow "One chat per phase" in How I Work. On a website, `start phase N` 
 | Area | Rule |
 |---|---|
 | Scaffold | Pin `create-next-app` to a chosen version and record it in the kit. This is the pin-versions rule in How I Work. |
+| Vercel plugin | Stays off for these sites. Its advice assumes a server and Vercel hosting, which the Export rule below forbids. A new client site sets `"vercel@claude-plugins-official": false` in `.claude/settings.local.json`. |
 | Export | `output: 'export'`, `images.unoptimized: true`, `trailingSlash: true`. No API routes, server actions, middleware or revalidate. If a feature needs a server, stop and flag it. |
 | Tokens | Tailwind `@theme` block in `globals.css`. No hex codes or magic pixel values in components. |
 | Content | Only from `data/`. Components never hardcode copy, contact details or links. |
@@ -325,7 +344,7 @@ The `0.copy-this-skill-folder-content` folders were emptied on 2026-10-12; one s
 |---|---|
 | Where do kit files get generated today? | Unknown. Assumed a claude.ai chat. |
 | Is the Hostinger static stack fixed for all clients? | Treated as the default, with an exit in stage 2 |
-| Screenshots by Claude: allowed for visual work? | Yes, against my running server. aumplus and cisqo currently say no. |
+| Screenshots by Claude: allowed for visual work? | Yes, against my running server; How I Work now says so for all work. aumplus and cisqo currently say no. |
 | Image optimisation: one scheme? | Postbuild on `out/`. kapip uses a prebuild in-place scheme instead. |
 | Form handler | Web3Forms. aquai uses a PHP mailer. |
 | Analytics tool | None chosen |
@@ -346,3 +365,72 @@ The `0.copy-this-skill-folder-content` folders were emptied on 2026-10-12; one s
 | Deploy | `Apps\packages_personal\deploy-package`, kapip `COMMANDS.md` |
 | Product-sense file, check rules | `HOW_I_WORK.md` |
 | Search, sharing and launch checklist | New in this draft; not taken from a past project |
+
+## 14. Pending
+
+Everything still open in this playbook, in one place. Read through on 2026-10-12. Sections 11 and 12 hold the detail for two of the groups; this section adds what a full read turned up and puts it all in order.
+
+### A. Prove it on a real site
+
+| # | Pending | Note |
+|---|---|---|
+| A1 | Run the playbook on one client site, start to finish | It is draft 1 and has never been used. Every stage and gate is untested. |
+| A2 | Check the stage 6 launch checklist against a real launch | Its search, sharing and launch lines are new in this draft, not taken from a past project. |
+| A3 | Try the `website-playbook` skill past stage 1, and in Codex | Tested once, in Claude, on a made-up stage 1 case. |
+
+### B. Build
+
+Section 11 lists the starter kit. None of the six items exists yet.
+
+| # | Pending | Note |
+|---|---|---|
+| B1 | Template `CLAUDE.md` for a client site | Four hand-written versions disagree today. |
+| B2 | Templates for `product_sense.md`, `BRIEF.md`, `PRD.md`, `DESIGN.md`, `STATUS.md`, `CHANGES.md` | |
+| B3 | Template `KICKOFF-PROMPT.md`, phases 0 to 6, with a pinned scaffold version | Three versions exist, all using `@latest`. |
+| B4 | Shared scripts: placeholders, postbuild image optimise, leak check, deploy | The screenshot script is done and shared. |
+| B5 | Client intake and asset-request sheet | |
+| B6 | Launch checklist as a file per project | |
+| B7 | Decide where the kit lives | Not stated anywhere. `build_os` is the likely home, beside `tools\` and `skills\`. |
+| B8 | Retire the two lizen skills as general standards | Only once the kit exists. |
+
+Build these from the files of the first site that goes through the playbook, not in the abstract.
+
+### C. Decide
+
+Section 12 has nine open questions. Their state today:
+
+| # | Question | State |
+|---|---|---|
+| C1 | Where do kit files get generated? | Open. Tied to B7. |
+| C2 | Is the Hostinger static stack fixed for all clients? | Open. Default with an exit in stage 2. |
+| C3 | Screenshots by Claude | Mostly settled: How I Work now allows them for visual work unless a project says no. Still to do: the instruction files in aumplus and cisqo say no; change them or leave them as exceptions. |
+| C4 | One image optimisation scheme | Open. Postbuild here; kapip uses prebuild. |
+| C5 | Form handler | Open. Web3Forms here; aquai uses a PHP mailer. |
+| C6 | Analytics tool | Open. None chosen, yet the launch checklist asks for the decision. |
+| C7 | Performance budget numbers | Open. Needs measurements from a live site. |
+| C8 | web-studio: keep the app? | Open. Its content is folded in here; the app is left alone. |
+| C9 | Stages as separate commands | Wait for one real project. |
+
+### D. Gaps found on the read-through
+
+Things the playbook leans on but does not say, or says two ways.
+
+| # | Gap | Where |
+|---|---|---|
+| D1 | Settled 2026-10-12: every site has a separate `DESIGN.md`, short on a light site. The tier table in section 5 now says so. | Sections 5 and 7 |
+| D2 | Settled 2026-10-12: they happen at the start of stage 2. Section 5 now has a step for comparing two or three shapes before the sitemap is fixed. | Sections 4 and 5 |
+| D3 | Stage 4's gate says the client or I sign off one direction, but not what the client is shown to sign off: a written direction, a wireframe, or a built hero. | Section 7 |
+| D4 | Nothing on the commercial side: proposal, price, timeline, payment, and what happens when the client is late with content. | Missing |
+| D5 | "Logins and where they are kept" names no place. | Section 10 |
+| D6 | Nothing after handover except change requests: hosting and domain renewals, backups, checking the live site still works. | Section 10 |
+| D7 | The launch checklist asks for redirects from old URLs, a 404 page and business details as structured data, but section 8 has no standard for any of the three on a static Hostinger site. | Sections 8 and 9 |
+| D8 | "Client edits content often" stops at "discuss a CMS". There is no path for a site that does need one. | Section 5 |
+| D9 | Settled 2026-10-12: the Vercel plugin is off for client and static sites. Switched off in nine existing ones, and section 8 has the rule for new ones. | Section 8 |
+| D10 | The existing sites (kapip, aquai, aumplus, cisqo-white, lizen) each follow their own older rules. Nothing says whether to bring them in line or leave them. | Whole playbook |
+
+### Order
+
+1. A1, on the next client site. Answer C and D items as that site forces them.
+2. D1, D2 and D9 were settled on 2026-10-12, before that site starts.
+3. B, from that site's files.
+4. The rest of C and D as they come up.

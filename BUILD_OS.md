@@ -67,7 +67,7 @@ A playbook never repeats the base. It opens by saying it builds on How I Work, a
 ### Starting a new project
 
 1. Do the product-sense pass first and save it as `docs/product_sense.md`. `HOW_I_WORK.md` has the steps.
-2. If the project is Next.js or will go live on Vercel, turn on the Vercel plugin for it. Claude should offer; if it does not, say "turn on Vercel here". It is one small settings file in the project, and it takes effect in the next chat. Nothing is downloaded or copied.
+2. If the project will go live on Vercel, or is Next.js with a server, turn on the Vercel plugin for it. Leave it off for a static site hosted elsewhere, such as a client site on Hostinger. Claude should offer; if it does not, say "turn on Vercel here". It is one small settings file in the project, and it takes effect in the next chat. Nothing is downloaded or copied.
 3. For a client website, follow the Website Playbook page.
 
 ## 2. Which tool when
@@ -140,7 +140,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `website-playbook` | skill | `Apps\build_os\skills\website-playbook`, linked into both tools, since 2026-10-12 | own |
 | `frontend-design` 1.1.0 | plugin, switched off on 2026-10-12 | `~/.claude/plugins` | anthropics/claude-code |
 | `ui-ux-pro-max` 2.13.0 | plugin, 7 skills | `~/.claude/plugins` | nextlevelbuilder/ui-ux-pro-max-skill |
-| `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in the 48 Next.js projects | `~/.claude/plugins` | claude-plugins-official |
+| `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in 39 Next.js projects, and off on purpose in 9 client and static sites | `~/.claude/plugins` | claude-plugins-official |
 | 16 synced skills (pdf, docx, pptx, xlsx, deep-research and others) | skills | `~/.claude/skills/synced` | claude.ai account |
 | How I Work | shared instructions for any AI tool | `Apps\build_os\HOW_I_WORK.md`, pulled into `CLAUDE.md` by an `@` reference line | own |
 | Claude-only rules, 4 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-12 | own |
@@ -289,7 +289,7 @@ One line per design task. Claude is told to offer this line when a design task e
 | Make `impeccable` global, or keep it per project? | Keep it per project. Its trigger covers all UI work, so globally it would compete with the other three on every design task. |
 | Which `frontend-design` copy to keep? | Decided 2026-10-12: the skill copy. The plugin is switched off in `settings.json`, not uninstalled, so it can be turned back on. |
 | Remove the unused `ui-ux-pro-max` copy in `~/.agents/skills`? | No. It is not unused: Codex reads that folder, so this is Codex's copy. |
-| Vercel plugin: global, or enabled only in Vercel projects? | Decided 2026-10-12: off globally, on in every Next.js project through `.claude/settings.local.json`. 48 projects have the switch. Four of them (caman, claude-skills, lizen-website, wavelink_profile) keep that file in git, so it shows there as a changed file. |
+| Vercel plugin: global, or enabled only in Vercel projects? | Decided 2026-10-12: off globally, on in every Next.js project through `.claude/settings.local.json`. 48 projects have the switch: on in 39, and set to off in 9 client and static sites (the Next.js sites in `Websites`, plus kanka, sevenseas_website, lizen-website and wavelink_website), because the plugin's advice assumes a server and Vercel hosting. Four of them (caman, claude-skills, lizen-website, wavelink_profile) keep that file in git, so it shows there as a changed file. |
 | Default model: stay on `opus` or switch to `opusplan`? | Try `opusplan` on the next project and record the result in section 5. |
 | One install method for all skills? | Decided 2026-10-12: one real home in `~/.agents/skills`, links elsewhere, never a copy. See section 3. |
 | What to do with the copy-this-skill-folder templates and the Buildweek project copies? | Done on 2026-10-12: the copies were deleted. One copy of `convex-auth` is kept in the Buildweek template folder. Still open: where `convex-auth` should live, and whether to delete the leftover `skills-lock.json` files. |
@@ -332,6 +332,8 @@ Proposed rule, not yet agreed: before a project goes quiet, run `learn` and save
 ## 8. What to do next
 
 The Product Sense page now sets the priority. Its first version was made on 2026-10-12: tighter product-sense wording, skill-picking rules for Claude, and a design results log. What matters next is the measure: over my next three projects or features, did the AI ask before building, and did it pick the design skill the rules say?
+
+The Website Playbook keeps its own pending list, in its section 14: 3 things to prove on a real site, 8 to build, 9 to decide and 10 gaps. Its first step is to run the playbook on the next client site.
 
 The list below is everything else, in the order I would do it. Most of it serves the side goal and is parked until then.
 
