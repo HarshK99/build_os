@@ -18,17 +18,17 @@ Two AI coding tools are set up on this machine. They do not share anything: inst
 |---|---|---|
 | Role | Main tool | Still used; newest chat is from 2026-10-12 |
 | Default model | Opus | gpt-6-luna |
-| My standing instructions | The shared `HOW_I_WORK.md`, pulled in by reference from `~/.claude/CLAUDE.md`, which itself now holds one Claude-only rule | `~/.codex/AGENTS.md`: how to talk to me, phases across chats, no builds or tests unless asked |
+| My standing instructions | The shared `HOW_I_WORK.md`, pulled in by reference from `~/.claude/CLAUDE.md`, which also holds a few Claude-only rules | `~/.codex/AGENTS.md`: a copy of the shared `HOW_I_WORK.md` |
 | Global skills | 9 of my own, plus 16 synced from claude.ai | 6 built in |
 | Plugins | 3 installed: `ui-ux-pro-max` on everywhere, `vercel` on per project, `frontend-design` off | 4: `teach`, `learn`, `work-pets`, `plugin-management` |
 | Saved chats | 65, about 275 MB, across 25 projects | 108, about 646 MB, across 26 projects |
 | Chat retention | Kept for 365 days since 2026-10-12; it was 30, see section 7 | Kept; oldest is from 2026-06-25 |
 | Other saved material | 14 plan files, 23 memory notes (index files not counted) | 1 memory note |
-| Projects with their own skills | caman, listing-hunt, lizen-website, assignment | 4 Buildweek projects (copied skill folder) |
+| Projects with their own skills | caman, listing-hunt, lizen-website, assignment | None since 2026-10-12; the Buildweek copies were deleted |
 
 Three things stand out:
 
-1. **The way I like to work now has one shared home.** Plain words, one question at a time, and one chat per phase with a status file are in `HOW_I_WORK.md` in this folder. Claude Code reads it by reference since 2026-10-12. Codex still has its own older copy of the same rules in `~/.codex/AGENTS.md`.
+1. **The way I like to work now has one shared home.** Plain words, one question at a time, and one chat per phase with a status file are in `HOW_I_WORK.md` in this folder. Claude Code reads it by reference, and Codex reads a copy, both since 2026-10-12.
 2. **The same skills exist in several places:** global, plugin, per-project copies, and Codex. Sections 3 and 4 list them.
 3. **Chats are the least organised part.** About 173 chats and 920 MB across both tools, with nothing marking which ones matter. Claude Code has already deleted its oldest week.
 
@@ -102,7 +102,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `/interface-design`, `/frontend-design` | Design skills, see the Design table above | Everywhere |
 | `/impeccable` | Design critique, audit, polish and more | caman only |
 | `/vercel:deploy`, `/vercel:env`, `/vercel:status`, `/vercel:bootstrap` | Vercel project actions | Everywhere, via the Vercel plugin |
-| `teach` | Turns what was just built in the chat into a short local lesson: one real example, a diagram, one recall question. Saves to `~/teach-lessons/`. Needs Python 3.9 or newer | Codex only. Not in Claude Code, see finding 9 |
+| `teach` | Turns what was just built in the chat into a short local lesson: one real example, a diagram, one recall question. Saves to `~/teach-lessons/`. Needs Python 3.9 or newer | Codex, and Claude Code since 2026-10-12. Type `teach` after building something |
 | `/phase` | Project command | jobs-gmail-dashboard only |
 
 ## 3. Inventory: what is installed where
@@ -117,17 +117,20 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `vercel-react-best-practices` | skill | same | vercel-labs/agent-skills |
 | `writing-plans` | skill | same | obra/superpowers |
 | `showcase` | skill | `D:\FounderMode\Apps\showcase\skill`, linked | own |
-| `learn` | skill | `~/.claude/skills/learn` | own |
-| `humanizer` | skill | `~/.claude/skills/humanizer` | not tracked |
-| `frontend-slides` | skill | `~/.claude/skills/frontend-slides`, added 2026-10-09 | not tracked |
+| `learn` | skill | `~/.agents/skills`, linked, since 2026-10-12 | own |
+| `humanizer` | skill | same, since 2026-10-12 | not in the lock file |
+| `frontend-slides` | skill | same, since 2026-10-12; added 2026-10-09 | not in the lock file |
+| `teach` 0.6.3 | skill | `~/.claude/skills/teach`, copied from the Codex install on 2026-10-12 | udayanwalvekar/teach |
 | `frontend-design` 1.1.0 | plugin, switched off on 2026-10-12 | `~/.claude/plugins` | anthropics/claude-code |
 | `ui-ux-pro-max` 2.13.0 | plugin, 7 skills | `~/.claude/plugins` | nextlevelbuilder/ui-ux-pro-max-skill |
 | `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in the 48 Next.js projects | `~/.claude/plugins` | claude-plugins-official |
 | 16 synced skills (pdf, docx, pptx, xlsx, deep-research and others) | skills | `~/.claude/skills/synced` | claude.ai account |
 | How I Work | shared instructions for any AI tool | `Apps\build_os\HOW_I_WORK.md`, pulled into `CLAUDE.md` by an `@` reference line | own |
-| Claude-only rules, 2 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-12 | own |
+| Claude-only rules, 4 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-12 | own |
 
-The five linked skills are tracked in `~/skills-lock.json`.
+The first five linked skills are tracked in `~/skills-lock.json`.
+
+**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
 
 On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were moved into `HOW_I_WORK.md`, word for word. That includes the three added since the first inventory: the product-sense pass, stating the pain before a new feature, and agreeing the hero concept. One rule stayed behind because it names a Claude Code setting (running long commands in the background). The old file is saved at `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move`.
 
@@ -142,8 +145,9 @@ On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were mo
 | lizen-website | skills `lizen-energy-design`, `nextjs-coding-standards` |
 | jobs-gmail-dashboard | command `phase` |
 | assignment | skill `pm-assignment-style` |
-| Buildweek: clicky-scrapper, heyclicky, nudge_landing, what-is-water | copies of `convex-auth`, `copywriting`, `frontend-design`, `interface-design`, `vercel-react-best-practices`, `writing-plans` |
-| Buildweek and Websites: `0.copy-this-skill-folder-content` | the template those copies come from |
+| Buildweek: `0.copy-this-skill-folder-content` | the one remaining copy of `convex-auth`, kept because it exists nowhere else |
+
+Until 2026-10-12, four Buildweek projects and two `0.copy-this-skill-folder-content` template folders each held copies of six skills. Thirty-five of those copies matched their originals file for file and were deleted. Each of the six places still has a `skills-lock.json`, which records where the skills came from.
 
 ### Product-sense files
 
@@ -160,10 +164,10 @@ Codex is a separate tool with its own setup under `~/.codex`. Nothing here is vi
 | `learn` | prompt, `~/.codex/prompts/learn.md` | own |
 | `work-pets` 0.1.6, `plugin-management` 0.1.0 | plugins | OpenAI curated |
 | `imagegen`, `openai-docs`, `plugin-creator`, `review-agent`, `skill-creator`, `skill-installer` | built-in skills | Codex |
-| `AGENTS.md` | instructions | own |
+| `AGENTS.md` | instructions. Since 2026-10-12 a copy of `HOW_I_WORK.md`, rewritten by `node sync-codex.mjs` in this folder. The older hand-written file is saved next to it as `AGENTS.md.backup-2026-10-12` | own |
 | `default.rules` | command permission rules | Codex |
 
-What `~/.codex/AGENTS.md` tells Codex:
+What the older `~/.codex/AGENTS.md` told Codex, before it became a copy of the shared file:
 
 - **How to talk to me:** plain words, one question at a time with concrete choices, say what it is about to do, explain its tools the first time, no false confidence, match my energy, push back when I am wrong.
 - **Phases across chats:** one new chat per phase; each phase has its own instructions, inputs, deliverables and stopping point; `start phase N` is enough to begin.
@@ -171,7 +175,7 @@ What `~/.codex/AGENTS.md` tells Codex:
 - **Short handoffs,** written once, inside the phase commit.
 - **Agree the app's job first,** before turning a source document into features.
 
-All five are now covered by the shared `HOW_I_WORK.md`, which Claude Code reads; the fifth through its product-sense rules. Codex itself still reads only its own file.
+All five are covered by the shared `HOW_I_WORK.md`, the fifth through its product-sense rules. Claude Code reads that file by reference, and Codex reads a copy. Two details from the older Codex file are not in the shared one: recording my go-ahead for builds and tests in the handoff, and treating a manual browser walkthrough as separate from a test run.
 
 Scanned on 2026-10-05 and again on 2026-10-12: `~/.claude`, `~/.agents`, `~/.codex`, and every folder two levels deep under `D:\FounderMode` (Apps, Websites, Buildweek, assignment, planning, Tools, Founder OS).
 
@@ -206,7 +210,9 @@ All fifteen findings above still hold. New since then:
 5. **A `.trash` folder appeared in `~/.claude/skills`** on 2026-10-12, holding four items. Not checked what they are.
 6. **Nothing from section 8 has been done,** apart from putting this folder under git.
 7. **A new Start Menu entry, "Opportunity Dashboard",** was added. Not checked what it opens.
-8. **Done on 2026-10-12:** chat retention raised to 365 days; the shared `HOW_I_WORK.md` created and wired into `~/.claude/CLAUDE.md`; and the 13 universal rules moved into it. A fresh test chat answered questions from the shared file, so the reference loads. Also that day: the duplicate `frontend-design` plugin was switched off, and the Vercel plugin was moved from global to per project.
+8. **Corrections to earlier findings.** Codex reads `~/.agents/skills` as its own skills folder, so the `ui-ux-pro-max` and `learn` folders there were never unused; they are what Codex uses (finding 3 was wrong about that). The `.trash` folder in Claude's skills folder holds older versions of four synced skills, put there by Claude's own syncing. And Claude Code does not read a project's `.agents/skills`, so the Buildweek project copies only ever affected Codex.
+9. **Skills now have one home.** On 2026-10-12 `learn`, `humanizer` and `frontend-slides` were moved to `~/.agents/skills` with links for Claude, joining the five already set up that way. Codex now sees `humanizer` and `frontend-slides` too. The folders as they were are saved in `~/.claude/backups/skills-moved-2026-10-12`.
+10. **Also done on 2026-10-12:** chat retention raised to 365 days; the shared `HOW_I_WORK.md` created and wired into `~/.claude/CLAUDE.md`; and the 13 universal rules moved into it. A fresh test chat answered questions from the shared file, so the reference loads. Also that day: the duplicate `frontend-design` plugin was switched off, and the Vercel plugin was moved from global to per project.
 
 ### Where projects are deployed
 
@@ -247,10 +253,11 @@ One line per design task. Claude is told to offer this line when a design task e
 |---|---|
 | Make `impeccable` global, or keep it per project? | Keep it per project. Its trigger covers all UI work, so globally it would compete with the other three on every design task. |
 | Which `frontend-design` copy to keep? | Decided 2026-10-12: the skill copy. The plugin is switched off in `settings.json`, not uninstalled, so it can be turned back on. |
-| Remove the unused `ui-ux-pro-max` copy in `~/.agents/skills`? | Yes. |
+| Remove the unused `ui-ux-pro-max` copy in `~/.agents/skills`? | No. It is not unused: Codex reads that folder, so this is Codex's copy. |
 | Vercel plugin: global, or enabled only in Vercel projects? | Decided 2026-10-12: off globally, on in every Next.js project through `.claude/settings.local.json`. 48 projects have the switch. Four of them (caman, claude-skills, lizen-website, wavelink_profile) keep that file in git, so it shows there as a changed file. |
 | Default model: stay on `opus` or switch to `opusplan`? | Try `opusplan` on the next project and record the result in section 5. |
-| One install method for all skills? | Decide after the cleanup above. |
+| One install method for all skills? | Decided 2026-10-12: one real home in `~/.agents/skills`, links elsewhere, never a copy. See section 3. |
+| What to do with the copy-this-skill-folder templates and the Buildweek project copies? | Done on 2026-10-12: the copies were deleted. One copy of `convex-auth` is kept in the Buildweek template folder. Still open: where `convex-auth` should live, and whether to delete the leftover `skills-lock.json` files. |
 | How long to keep chats? | Raised from 30 to 365 days on 2026-10-12, as a holding step. Still to decide: delete a project's chats once its documentation is done, or keep everything. See section 7. |
 | Should build_os have a `product_sense.md`? | Done on 2026-10-12. See the Product Sense page. Main goal: a repeatable way of building that any AI follows. Picked pains: the AI builds before the thinking is agreed, and not knowing which skill to use. |
 
@@ -294,13 +301,13 @@ The Product Sense page now sets the priority. Its first version was made on 2026
 The list below is everything else, in the order I would do it. Most of it serves the side goal and is parked until then.
 
 1. **Decide the chat rule.** Retention was raised to 365 days on 2026-10-12, so nothing is being lost while this is open. The idea to settle: once a project's documentation is done (`product_sense.md`, plans, `learnings.md`), its chats can go; until then they stay.
-2. **Finish the shared instructions.** `HOW_I_WORK.md` exists and Claude Code points at it. The universal rules have been moved in and it loads in a fresh chat. Still to do: polish the wording with use, and give Codex a copy in place of its own older rules.
-3. **Finish the skill tidy-up.** Done on 2026-10-12: the `frontend-design` plugin is off, so that skill shows once, and the `learn` skill now says `/learn` instead of `$learn`. Left alone on purpose: the spare `ui-ux-pro-max` and `learn` copies in `~/.agents`, which Claude does not load and Codex might. Still to do: one way of installing skills, record the four untracked ones, retire the copy-this-skill-folder templates, check the `.trash` folder.
+2. **Finish the shared instructions.** `HOW_I_WORK.md` exists and Claude Code points at it. The universal rules have been moved in, it loads in a fresh Claude chat, and Codex has a copy. Still to do: polish the wording with use, and check in Codex that it follows the copy.
+3. **Finish the skill tidy-up.** Done on 2026-10-12: the `frontend-design` plugin is off, so that skill shows once, and the `learn` skill now says `/learn` instead of `$learn`. Also done that day: `learn`, `humanizer` and `frontend-slides` moved to the one shared home with links. The Buildweek and template copies were deleted too. Still to do: decide where `convex-auth` lives.
 4. **Check the Vercel change in real use.** Done on 2026-10-12: the plugin is off globally and on in the 48 Next.js projects. Still to do: open a chat in a Next.js project and confirm the `vercel:` skills are there, and type `/context` in a non-web project to see what was saved.
 5. **Run the next project on `/model opusplan`** with a plan file and a fresh session per phase. Record in section 5 whether quality held and whether usage dropped.
 6. **Test the design split on the next UI task.** Name the skill explicitly, then record the result in section 5. After three or four entries the table in section 2 will rest on evidence.
-7. **Install `teach` into Claude Code.** It is in Codex only today. Copying the skill folder into `~/.claude/skills/teach` should be enough; it needs Python, which is installed.
-8. **Replace the copy-this-skill-folder habit.** Anything in that template that should be in every project belongs in the global install; decide where `convex-auth` goes.
+7. **Try `teach` in Claude Code.** Installed on 2026-10-12 by copying the skill folder. A fresh chat lists it, but it has not been run there yet. After building something, type `teach`.
+8. **Remove the backups in section 10** once the changes they protect have held up in real use.
 9. **Decide what to do with the Codex chats.** They are the only record of work before September. Keep them, or pull out what matters and then clear them.
 10. **Finish the inventory:** per-project `CLAUDE.md`, `AGENTS.md` and `learnings.md` files, the `.trash` folder in the skills folder, and what "Opportunity Dashboard" opens.
 11. **Keep a copy of the PowerShell profile in this repo,** so the terminal commands in section 9 survive a reset.
@@ -348,3 +355,18 @@ Type the name in the Start Menu, or in mysearchbar (Alt + Space).
 - No shortcut command for the `Buildweek` folder.
 - No custom keyboard shortcuts inside Claude Code.
 - No git short commands.
+
+## 10. Backups to remove later
+
+Made on 2026-10-12 while changing the setup. Each one is the old version of something, kept in case the change needs undoing. Delete a row's backup once its change has held up in real use.
+
+| Backup | Where | What it protects | Safe to remove when |
+|---|---|---|---|
+| Old `CLAUDE.md`, with all 14 rules in it | `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move` | Moving the rules into `HOW_I_WORK.md` | A few real chats have followed the shared file |
+| Old `learn`, `humanizer` and `frontend-slides` folders | `~/.claude/backups/skills-moved-2026-10-12` | Moving those skills to the one shared home | Each of the three has been used once from its new place |
+| Old Codex instruction file | `~/.codex/AGENTS.md.backup-2026-10-12` | Replacing Codex's own rules with a copy of the shared file | Codex has been seen following the copy, and its two missing details are either added to the shared file or dropped |
+
+Not backed up, because nothing was lost:
+
+- The 35 deleted skill copies. Each matched its original file for file, and heyclicky's are also in its git history.
+- The `frontend-design` plugin and the Vercel plugin. Both were switched off, not uninstalled; one setting turns each back on.
