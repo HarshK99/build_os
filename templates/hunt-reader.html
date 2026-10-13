@@ -1,0 +1,491 @@
+<!doctype html>
+<!--
+  Hunt reader. Shows the .md files of one Idea Playbook hunt, read live from disk.
+
+  The master copy is build_os\templates\hunt-reader.html. Change it there, then copy it
+  again into each hunt folder as read.html. Nothing in this file is about one hunt.
+
+  Open by double-click in Edge or Chrome. A browser will not let a double-clicked page
+  read other files, so the page asks for the hunt's folder: once to choose it, and after
+  that one click to allow it again. It re-reads the files whenever you come back to the tab.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hunt reader</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
+<style>
+  :root {
+    --bg: #ffffff;
+    --panel: #f7f8fa;
+    --text: #1f2430;
+    --muted: #667085;
+    --line: #e4e7ec;
+    --accent: #4f46e5;
+    --accent-soft: #eef0ff;
+    --code-bg: #f1f3f6;
+    --near: #0f7a4d; --near-soft: #e3f6ec;
+    --mid: #9a6200; --mid-soft: #fdf1d8;
+    --far: #667085; --far-soft: #eceef2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1115;
+      --panel: #151821;
+      --text: #e3e6ec;
+      --muted: #98a1b3;
+      --line: #262b37;
+      --accent: #9aa2ff;
+      --accent-soft: #1e2140;
+      --code-bg: #1c202b;
+      --near: #6fdca6; --near-soft: #12301f;
+      --mid: #f0c36a; --mid-soft: #35290f;
+      --far: #98a1b3; --far-soft: #222733;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 16px/1.65 -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+  }
+  [hidden] { display: none !important; }
+
+  /* Shown until the folder has been chosen or allowed again. */
+  .gate { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+  .gate div { max-width: 460px; text-align: center; }
+  .gate h1 { font-size: 26px; letter-spacing: -0.01em; margin: 0 0 10px; text-transform: capitalize; }
+  .gate p { color: var(--muted); margin: 0 0 22px; }
+  .gate button {
+    font: inherit; font-weight: 600; padding: 10px 20px; border-radius: 8px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: var(--bg);
+  }
+  .gate button.plain { background: none; color: var(--muted); border-color: transparent; font-weight: 400; font-size: 14px; }
+  .gate button.plain:hover { color: var(--text); }
+
+  .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+
+  aside {
+    position: sticky; top: 0; height: 100vh; overflow-y: auto;
+    background: var(--panel); border-right: 1px solid var(--line);
+    padding: 28px 16px 40px;
+  }
+  .brand { font-weight: 700; font-size: 18px; padding: 0 10px 2px; letter-spacing: -0.01em; text-transform: capitalize; }
+  .status { font-size: 12px; color: var(--muted); padding: 0 10px 16px; }
+  .status button { font: inherit; color: var(--accent); background: none; border: none; padding: 0; cursor: pointer; }
+  .label {
+    font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--muted); padding: 14px 10px 6px;
+  }
+  aside a {
+    display: block; padding: 6px 10px; border-radius: 6px;
+    color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.4;
+  }
+  aside a:hover { color: var(--text); background: var(--line); }
+  aside a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+  aside a.sub { padding-left: 24px; font-size: 13px; }
+
+  #search {
+    width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
+    background: var(--bg); color: var(--text); font: inherit; font-size: 14px;
+  }
+  #search:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  #results { margin-top: 6px; }
+  #results a { padding: 7px 10px; }
+  #results .where { display: block; font-size: 11px; font-weight: 600; color: var(--accent); }
+  #results .snippet { display: block; font-size: 12.5px; color: var(--muted); }
+  #results mark, .flash { background: #ffe58a; color: #1f2430; }
+  #results mark { border-radius: 3px; padding: 0 1px; }
+  #results .none { padding: 7px 10px; font-size: 13px; color: var(--muted); }
+  .flash { transition: background 0.3s; border-radius: 4px; }
+
+  main { padding: 48px 56px 120px; max-width: 980px; }
+  main h1 { font-size: 34px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 12px; }
+  main h2 {
+    font-size: 24px; letter-spacing: -0.01em; margin: 56px 0 14px;
+    padding-top: 28px; border-top: 1px solid var(--line);
+  }
+  main h3 { font-size: 18px; margin: 32px 0 10px; }
+  main p, main li { color: var(--text); }
+  main a { color: var(--accent); overflow-wrap: anywhere; }
+  main ul, main ol { padding-left: 22px; }
+  main li { margin: 8px 0; }
+  code {
+    font: 13.5px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace;
+    background: var(--code-bg); padding: 2px 6px; border-radius: 5px;
+  }
+  pre { background: var(--code-bg); padding: 16px; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  .table-wrap { overflow-x: auto; margin: 16px 0 24px; border: 1px solid var(--line); border-radius: 8px; }
+  table { border-collapse: collapse; width: 100%; font-size: 14.5px; }
+  th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--panel); font-weight: 600; font-size: 13px; color: var(--muted); }
+  tr:last-child td { border-bottom: none; }
+  .error { color: var(--muted); padding: 24px 0; }
+
+  /* How far a quote's author is from the group the hunt is about. */
+  .tier {
+    display: inline-block; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 1px 8px; border-radius: 999px; vertical-align: 1px;
+  }
+  .tier.near { color: var(--near); background: var(--near-soft); }
+  .tier.mid { color: var(--mid); background: var(--mid-soft); }
+  .tier.far { color: var(--far); background: var(--far-soft); }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 4px; }
+  .filters button {
+    font: inherit; font-size: 13.5px; padding: 5px 12px; border-radius: 999px; cursor: pointer;
+    border: 1px solid var(--line); background: var(--bg); color: var(--muted);
+  }
+  .filters button:hover { color: var(--text); }
+  .filters button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .filters button span { opacity: 0.7; margin-left: 2px; }
+  li.off { display: none; }
+
+  @media (max-width: 860px) {
+    .layout { grid-template-columns: minmax(0, 1fr); }
+    aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
+    main { padding: 28px 18px 80px; }
+  }
+</style>
+</head>
+<body>
+<div class="gate" id="gate">
+  <div>
+    <h1 id="gateTitle">Hunt reader</h1>
+    <p id="gateText"></p>
+    <button id="gateButton"></button>
+    <p><button class="plain" id="gateOther" hidden>Choose a different folder</button></p>
+  </div>
+</div>
+
+<div class="layout" id="layout" hidden>
+  <aside>
+    <div class="brand" id="brand"></div>
+    <div class="status"><span id="readAt"></span> · <button id="change">change folder</button></div>
+    <input id="search" type="search" placeholder="Search this page" autocomplete="off">
+    <div id="results"></div>
+    <div id="docs"></div>
+    <div class="label" id="tocLabel">On this page</div>
+    <nav id="toc"></nav>
+  </aside>
+  <main id="content"></main>
+</div>
+
+<script>
+const gate = document.getElementById("gate");
+const gateTitle = document.getElementById("gateTitle");
+const gateText = document.getElementById("gateText");
+const gateButton = document.getElementById("gateButton");
+const gateOther = document.getElementById("gateOther");
+const layout = document.getElementById("layout");
+const content = document.getElementById("content");
+const toc = document.getElementById("toc");
+const docsNav = document.getElementById("docs");
+const tocLabel = document.getElementById("tocLabel");
+
+// Playbook files first, in the order the steps write them; anything else after, by name.
+const ORDER = ["research.md", "directions.md", "product_sense.md"];
+let folder;
+let docs = {};
+let current = decodeURIComponent(location.hash.slice(1));
+let tierFilter = "all";
+let observer;
+
+const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const pageName = (file) => file.replace(/\.md$/i, "").replace(/[_-]/g, " ").replace(/^[a-z]/, (c) => c.toUpperCase());
+
+// ---- Remembering the folder between visits ----
+// The browser keeps the chosen folder for this copy of the file, keyed by where the file sits.
+
+const STORE = "folders";
+const openStore = () => new Promise((resolve, reject) => {
+  const request = indexedDB.open("hunt-reader", 1);
+  request.onupgradeneeded = () => request.result.createObjectStore(STORE);
+  request.onsuccess = () => resolve(request.result);
+  request.onerror = () => reject(request.error);
+});
+async function remembered() {
+  try {
+    const db = await openStore();
+    return await new Promise((resolve) => {
+      const request = db.transaction(STORE).objectStore(STORE).get(location.pathname);
+      request.onsuccess = () => resolve(request.result || null);
+      request.onerror = () => resolve(null);
+    });
+  } catch {
+    return null;
+  }
+}
+async function remember(handle) {
+  try {
+    const db = await openStore();
+    db.transaction(STORE, "readwrite").objectStore(STORE).put(handle, location.pathname);
+  } catch {}
+}
+
+// ---- Reading the folder ----
+
+async function readFolder() {
+  const found = {};
+  for await (const [name, handle] of folder.entries()) {
+    if (handle.kind === "file" && /\.md$/i.test(name)) found[name] = await (await handle.getFile()).text();
+  }
+  const rank = (name) => (ORDER.indexOf(name) + 1) || ORDER.length + 1;
+  return Object.fromEntries(Object.keys(found)
+    .sort((a, b) => rank(a) - rank(b) || a.localeCompare(b))
+    .map((name) => [name, found[name]]));
+}
+
+async function refresh() {
+  let fresh;
+  try {
+    fresh = await readFolder();
+  } catch {
+    // Permission lapsed or the folder moved: go back to asking.
+    return showGate(folder);
+  }
+  const changed = JSON.stringify(fresh) !== JSON.stringify(docs);
+  docs = fresh;
+  document.getElementById("readAt").textContent =
+    "Read " + new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" });
+  if (!changed) return;
+
+  const names = Object.keys(docs);
+  if (!names.includes(current)) current = names[0];
+  const scroll = window.scrollY;
+  renderDocList();
+  render();
+  window.scrollTo(0, scroll);
+}
+
+async function open(handle) {
+  folder = handle;
+  docs = null; // so the first read always draws, even for an empty folder
+  gate.hidden = true;
+  layout.hidden = false;
+  document.getElementById("brand").textContent = folder.name + " hunt";
+  await refresh();
+}
+
+function showGate(known) {
+  layout.hidden = true;
+  gate.hidden = false;
+  if (!window.showDirectoryPicker) {
+    gateText.textContent = "This page reads the hunt's .md files from disk, which needs Edge or Chrome. Open it in one of those.";
+    gateButton.hidden = true;
+    return;
+  }
+  if (known) {
+    gateTitle.textContent = known.name + " hunt";
+    gateText.textContent = "The browser asks before this page may read the folder again.";
+    gateButton.textContent = "Open " + known.name;
+    gateButton.onclick = async () => {
+      if ((await known.requestPermission({ mode: "read" })) === "granted") open(known);
+    };
+    gateOther.hidden = false;
+  } else {
+    gateText.textContent = "Choose the folder this file sits in. The page reads the .md files in it and shows them here.";
+    gateButton.textContent = "Choose the hunt's folder";
+    gateButton.onclick = choose;
+  }
+}
+
+async function choose() {
+  let handle;
+  try {
+    handle = await window.showDirectoryPicker({ mode: "read" });
+  } catch {
+    return; // the picker was closed
+  }
+  await remember(handle);
+  open(handle);
+}
+gateOther.onclick = choose;
+document.getElementById("change").onclick = choose;
+
+// ---- Showing a page ----
+
+function renderDocList() {
+  docsNav.innerHTML = '<div class="label">Pages</div>';
+  const names = Object.keys(docs);
+  if (!names.length) docsNav.insertAdjacentHTML("beforeend", '<div class="none" style="padding:7px 10px;font-size:13px;color:var(--muted)">No .md files in this folder</div>');
+  names.forEach((name) => {
+    const a = document.createElement("a");
+    a.href = "#" + encodeURIComponent(name);
+    a.textContent = pageName(name);
+    if (name === current) a.className = "active";
+    a.addEventListener("click", (event) => {
+      event.preventDefault();
+      current = name;
+      tierFilter = "all";
+      history.replaceState(null, "", "#" + encodeURIComponent(name));
+      renderDocList();
+      render();
+      window.scrollTo(0, 0);
+    });
+    docsNav.appendChild(a);
+  });
+}
+
+function applyTier() {
+  content.querySelectorAll("li").forEach((li) => {
+    const tier = li.querySelector(":scope > .tier, :scope > p > .tier");
+    li.classList.toggle("off", tierFilter !== "all" && !!tier && !tier.classList.contains(tierFilter));
+  });
+  content.querySelectorAll(".filters button").forEach((b) => b.classList.toggle("on", b.dataset.tier === tierFilter));
+}
+
+// A quote line marked **near**, **mid** or **far** gets a coloured tag, and the page a filter.
+function markTiers() {
+  const isTier = (s) => /^(near|mid|far)$/.test(s.textContent);
+  // A line that names more than one is the explanation of the marks, not a quote.
+  const marks = [...content.querySelectorAll("li strong")].filter((s) =>
+    isTier(s) && [...s.closest("li").querySelectorAll("strong")].filter(isTier).length === 1);
+  marks.forEach((s) => {
+    const tag = document.createElement("span");
+    tag.className = "tier " + s.textContent;
+    tag.textContent = s.textContent;
+    s.replaceWith(tag);
+  });
+  if (marks.length < 4) return;
+
+  const count = (tier) => content.querySelectorAll(".tier." + tier).length;
+  const bar = document.createElement("div");
+  bar.className = "filters";
+  [["all", "All quotes", marks.length], ["near", "Near", count("near")], ["mid", "Mid", count("mid")], ["far", "Far", count("far")]]
+    .forEach(([tier, label, n]) => {
+      const button = document.createElement("button");
+      button.dataset.tier = tier;
+      button.append(label + " ");
+      const number = document.createElement("span");
+      number.textContent = n;
+      button.appendChild(number);
+      button.addEventListener("click", () => { tierFilter = tier; applyTier(); });
+      bar.appendChild(button);
+    });
+  content.querySelector("h1")?.after(bar);
+  applyTier();
+}
+
+function render() {
+  const md = docs[current];
+  if (md === undefined) {
+    content.innerHTML = '<p class="error">No .md files in this folder yet.</p>';
+    toc.innerHTML = "";
+    tocLabel.hidden = true;
+    return;
+  }
+  if (window.marked) {
+    content.innerHTML = marked.parse(md);
+  } else {
+    // The markdown library did not load (no internet): show the plain text.
+    content.innerHTML = "<pre></pre>";
+    content.firstChild.textContent = md;
+  }
+
+  content.querySelectorAll("table").forEach((table) => {
+    const wrap = document.createElement("div");
+    wrap.className = "table-wrap";
+    table.replaceWith(wrap);
+    wrap.appendChild(table);
+  });
+  content.querySelectorAll('a[href^="http"]').forEach((a) => { a.target = "_blank"; a.rel = "noopener"; });
+  markTiers();
+
+  const headings = [...content.querySelectorAll("h2, h3")];
+  const seen = {};
+  toc.innerHTML = "";
+  tocLabel.hidden = headings.length === 0;
+  headings.forEach((h) => {
+    let id = slug(h.textContent);
+    seen[id] = (seen[id] || 0) + 1;
+    if (seen[id] > 1) id += "-" + seen[id];
+    h.id = id;
+    const a = document.createElement("a");
+    a.href = "#" + id;
+    a.textContent = h.textContent;
+    if (h.tagName === "H3") a.className = "sub";
+    // The address bar's # holds the page name, so scroll by hand.
+    a.addEventListener("click", (event) => { event.preventDefault(); h.scrollIntoView(); });
+    toc.appendChild(a);
+  });
+
+  observer?.disconnect();
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      toc.querySelectorAll("a").forEach((a) =>
+        a.classList.toggle("active", a.getAttribute("href") === "#" + entry.target.id));
+    });
+  }, { rootMargin: "0px 0px -75% 0px" });
+  headings.forEach((h) => observer.observe(h));
+
+  const title = content.querySelector("h1");
+  document.title = title ? title.textContent : folder.name + " hunt";
+  runSearch();
+}
+
+const search = document.getElementById("search");
+const results = document.getElementById("results");
+
+// Plain keyword match over paragraphs, list items and table rows.
+function runSearch() {
+  const query = search.value.trim().toLowerCase();
+  results.innerHTML = "";
+  if (query.length < 2) return;
+
+  let heading = "";
+  let count = 0;
+  for (const el of content.querySelectorAll("h1, h2, h3, p, li, tr")) {
+    if (/^H[1-3]$/.test(el.tagName)) heading = el.textContent;
+    if (el.tagName === "P" && el.closest("li")) continue;
+    if (el.tagName === "TR" && el.querySelector("th")) continue;
+
+    const text = el.textContent.replace(/\s+/g, " ").trim();
+    const at = text.toLowerCase().indexOf(query);
+    if (at === -1) continue;
+    if (++count > 15) break;
+
+    const start = Math.max(0, at - 30);
+    const link = document.createElement("a");
+    link.href = "#";
+    const where = document.createElement("span");
+    where.className = "where";
+    where.textContent = heading;
+    const snippet = document.createElement("span");
+    snippet.className = "snippet";
+    const mark = document.createElement("mark");
+    mark.textContent = text.slice(at, at + query.length);
+    snippet.append((start > 0 ? "…" : "") + text.slice(start, at), mark, text.slice(at + query.length, at + query.length + 60));
+    link.append(where, snippet);
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (tierFilter !== "all") { tierFilter = "all"; applyTier(); }
+      el.scrollIntoView({ block: "center" });
+      el.classList.add("flash");
+      setTimeout(() => el.classList.remove("flash"), 1600);
+    });
+    results.appendChild(link);
+  }
+  if (!count) results.innerHTML = '<div class="none">No matches</div>';
+}
+
+search.addEventListener("input", runSearch);
+search.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") results.querySelector("a")?.click();
+});
+
+// Pick up edits to the markdown when you come back to the tab.
+window.addEventListener("focus", () => { if (folder && !layout.hidden) refresh(); });
+
+(async () => {
+  const known = window.showDirectoryPicker ? await remembered() : null;
+  if (known && (await known.queryPermission({ mode: "read" })) === "granted") return open(known);
+  showGate(known);
+})();
+</script>
+</body>
+</html>
