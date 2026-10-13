@@ -373,12 +373,13 @@ Things I set up so I can get somewhere fast. Snapshot on 2026-10-12.
 
 ### Terminal commands
 
-Typed in the Windows PowerShell terminal. They live in my PowerShell profile, `Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`, which was last changed on 2026-10-05 (`web` added).
+Typed in the Windows PowerShell terminal. They live in my PowerShell profile, `Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1`, which was last changed on 2026-10-13 (`fm` added).
 
 | Command | What it does | Options |
 |---|---|---|
 | `apps` | Goes to `D:\FounderMode\Apps` | `apps typeforme` goes straight into that app; Tab completes the name |
 | `web` | Goes to `D:\FounderMode\Websites` | `web kapip_website` goes straight into that site; Tab completes the name |
+| `fm` | Goes to `D:\FounderMode` | `fm planning` goes into that folder, and `fm planning artists` goes one level deeper; Tab completes both names. This is the quick way to `planning` and `Buildweek`, which have no command of their own |
 | `lt` | Lists the 10 most recently changed items in the current folder | `lt -n 20` for more, `lt -All` for everything, `lt some\folder` for another folder |
 | `lc` | The same, ordered by when each item was created | Same options as `lt` |
 
@@ -407,7 +408,7 @@ Type the name in the Start Menu, or in mysearchbar (Alt + Space).
 
 ### Not set up
 
-- No shortcut command for the `Buildweek` folder.
+- No command of its own for the `Buildweek` or `planning` folder. `fm Buildweek` and `fm planning` cover them.
 - No custom keyboard shortcuts inside Claude Code.
 - No git short commands.
 
