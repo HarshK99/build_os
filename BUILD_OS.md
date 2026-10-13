@@ -114,7 +114,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `/copywriting` | Writes or improves marketing copy | Everywhere |
 | `/showcase` | Reel ideas and hooks, or X posts, for a finished app | Everywhere |
 | `/frontend-slides` | Builds an animated HTML presentation, or converts a PowerPoint file | Everywhere |
-| `/idea-playbook` | Loads the Idea Playbook and works out which of its five steps a hunt has reached. It also loads by itself when I say I don't know what to build | Everywhere, and in Codex |
+| `/idea-playbook` | Loads the Idea Playbook and works out which of its six steps a hunt has reached. It also loads by itself when I say I don't know what to build | Everywhere, and in Codex |
 | `/customer-research` | Reads what people say in public (forums, Reddit, review sites) and ranks their complaints, or digests interviews and reviews I already have. Step B of the Idea Playbook | Everywhere, and in Codex |
 | `/website-playbook` | Loads the Website Playbook, works out which stage the project is in, and checks the gate before it. It also loads by itself when the work is a client website | Everywhere, and in Codex |
 | `/interface-design`, `/frontend-design` | Design skills, see the Design table above | Everywhere |
