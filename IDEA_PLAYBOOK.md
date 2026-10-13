@@ -25,7 +25,7 @@ Status: draft 1, written 2026-10-12. Not yet used. An AI loads it through the `i
 
 Files for one hunt live in `D:\FounderMode\planning\<short-name>\`.
 
-To read them as a page, copy `templates\hunt-reader.html` from this folder into the hunt folder as `read.html`. It reads the `.md` files live. Change the template here, then copy it again; don't edit a hunt's copy.
+To read them as a page, open "Hunt Reader" from the Start Menu and choose the hunt's folder. It is one page for every hunt, `templates\hunt-reader.html` in this folder, and it reads the `.md` files live. A hunt needs no HTML file of its own.
 
 ## 3. Rules for every step
 

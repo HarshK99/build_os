@@ -54,6 +54,20 @@ $s.Save()
 
 To remove it, delete `Build OS.lnk` from that folder.
 
+### Hunt Reader
+
+`templates\hunt-reader.html` shows the `.md` files of one Idea Playbook hunt. It needs no server: it opens from disk and asks for the hunt's folder. It works in Edge and Chrome only, so its shortcut opens Edge directly. Create it once from PowerShell, run inside this folder:
+
+```powershell
+$lnk = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Hunt Reader.lnk"
+$s = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk)
+$s.TargetPath = "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe"
+$s.Arguments = "`"$PWD\templates\hunt-reader.html`""
+$s.Save()
+```
+
+To remove it, delete `Hunt Reader.lnk` from that folder.
+
 ## The Projects page
 
 The sidebar has a second page, Projects. It lists every project folder under the folder two levels above this one (here, `D:\FounderMode`), most recently changed first.

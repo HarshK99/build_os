@@ -393,6 +393,7 @@ Type the name in the Start Menu, or in mysearchbar (Alt + Space).
 | Name | What opens | Where it comes from |
 |---|---|---|
 | Build OS | This doc and the Projects page | `Apps\build_os\launch.ps1` |
+| Hunt Reader | The files of one Idea Playbook hunt, after choosing its folder. Opens in Edge | `Apps\build_os\templates\hunt-reader.html`, added 2026-10-13 |
 | mysearchbar | The search bar itself | `Apps\mysearchbar\dist\mysearchbar.exe` |
 | Goal Widget | The goal widget | Installed app, built in `Apps\goal-widget` |
 | Opportunity Dashboard | Not checked | Added between 2026-10-05 and 2026-10-12 |

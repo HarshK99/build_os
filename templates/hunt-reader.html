@@ -2,12 +2,12 @@
 <!--
   Hunt reader. Shows the .md files of one Idea Playbook hunt, read live from disk.
 
-  The master copy is build_os\templates\hunt-reader.html. Change it there, then copy it
-  again into each hunt folder as read.html. Nothing in this file is about one hunt.
+  One page for every hunt: nothing in this file is about one hunt. Opened by the
+  "Hunt Reader" Start Menu shortcut (see README.md), or by double-click in Edge or Chrome.
 
-  Open by double-click in Edge or Chrome. A browser will not let a double-clicked page
-  read other files, so the page asks for the hunt's folder: once to choose it, and after
-  that one click to allow it again. It re-reads the files whenever you come back to the tab.
+  A browser will not let a page opened from disk read other files, so the page asks for
+  the hunt's folder. It remembers the last one, and asks for one click to allow it again;
+  "change folder" switches hunts. It re-reads the files whenever you come back to the tab.
 -->
 <html lang="en">
 <head>
@@ -287,7 +287,7 @@ function showGate(known) {
     };
     gateOther.hidden = false;
   } else {
-    gateText.textContent = "Choose the folder this file sits in. The page reads the .md files in it and shows them here.";
+    gateText.textContent = "Choose a hunt's folder, such as planning\\artists. The page reads the .md files in it and shows them here.";
     gateButton.textContent = "Choose the hunt's folder";
     gateButton.onclick = choose;
   }
