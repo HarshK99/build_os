@@ -38,7 +38,7 @@ A route is a way of finding the problem. Pick one at the start of step A and wri
 
 A new route is one more column here, plus its own part in steps A and B. Steps C to F are written once and shared, so the gate at step E is the same on every route.
 
-Files for one hunt live in `D:\FounderMode\planning\<short-name>\`.
+Files for one hunt live in `D:\FounderMode\ideation\<short-name>\`.
 
 To read them as a page, open "Hunt Reader" from the Start Menu and choose the hunt's folder. It is one page for every hunt, `templates\hunt-reader.html` in this folder, and it reads the `.md` files live. A hunt needs no HTML file of its own.
 
@@ -174,7 +174,7 @@ Start a project for the chosen direction and begin the product-sense pass in How
 | Is three conversations the right number? | A guess: enough to hear a pattern, few enough to finish |
 | Is two weeks the right limit for getting them? | A guess |
 | Is thirty quotes the right stopping point for step B? | A guess. The first hunt stopped at about forty |
-| Where do the files for a hunt live? | `D:\FounderMode\planning\<short-name>\`. Used once; not formally agreed |
+| Where do the files for a hunt live? | `D:\FounderMode\ideation\<short-name>\`. Used once; not formally agreed |
 | Should the Opportunity Dashboard feed step A? | Not linked yet. It answers "what should I build this week" from contests and bounties |
 | Are four challenge questions enough? | Unknown until an idea picked this way is built |
 | What if a group does not complain in public? | Seen on the first hunt: the quotes came from people further from the group, and step E carried the weight |

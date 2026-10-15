@@ -5,16 +5,16 @@ This file is the storage contract. Other files in this skill name records ("the 
 ## Root
 
 ```
-D:\FounderMode\Apps\build_os\library\showcase
+D:\FounderMode\build_os\library\showcase
 ```
 
 ## Skill source
 
 ```
-D:\FounderMode\Apps\build_os\skills\showcase
+D:\FounderMode\build_os\skills\showcase
 ```
 
-The skill's own files. `D:\FounderMode\Apps\build_os` is a git repository holding both the skill and the library, alongside my other playbooks. Edit the skill here, not through the links in the personal skills folders.
+The skill's own files. `D:\FounderMode\build_os` is a git repository holding both the skill and the library, alongside my other playbooks. Edit the skill here, not through the links in the personal skills folders.
 
 ## Layout
 

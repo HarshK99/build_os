@@ -7,7 +7,7 @@ description: My playbook for client websites, from first conversation to handove
 
 The playbook is one file. Read it before doing anything else in this task:
 
-`D:\FounderMode\Apps\build_os\WEBSITE_PLAYBOOK.md`
+`D:\FounderMode\build_os\WEBSITE_PLAYBOOK.md`
 
 It builds on my shared instructions, How I Work, which you already have. Where the two differ, the playbook wins for client websites.
 

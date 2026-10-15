@@ -11,7 +11,7 @@ Bring one project in line with how I build, without touching its code. It builds
 
 Read these before saying anything. If one can't be read, say which and carry on with the rest.
 
-1. `D:\FounderMode\Apps\build_os\BUILD_OS.md`, sections 1 and 2.
+1. `D:\FounderMode\build_os\BUILD_OS.md`, sections 1 and 2.
 2. The project's own instruction files: `CLAUDE.md`, `AGENTS.md`, and any `.claude/settings*.json`.
 3. Its docs: everything in `docs/` (PRD, architecture, plan, status, product sense, design, learnings) and the README.
 4. The recent git log, with file stats, and the code itself: enough to know what is really built, not just what the docs claim.

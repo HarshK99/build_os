@@ -101,7 +101,7 @@ Two rules now sit on top of this table. For a marketing page, `HOW_I_WORK.md` sa
 | Reel ideas or X posts for a finished app | `showcase` |
 | A presentation or slide deck as a web page | `frontend-slides` |
 | React and Next.js performance | `vercel-react-best-practices` |
-| Looking at a page, or taking a screenshot | The shared tool: `node D:\FounderMode\Apps\build_os\tools\shot.mjs [route]`, run from the project's folder. Edge by default, `--chromium` when I say so. Since 2026-10-15 it also opens local `.html` files (design mock-ups), emulates a phone with `--mobile`, and can `--click` and `--scroll-in` (for example a wheel picker) before the shot, printing any page errors. The comments at the top of the file list every option. `HOW_I_WORK.md` has the rules |
+| Looking at a page, or taking a screenshot | The shared tool: `node D:\FounderMode\build_os\tools\shot.mjs [route]`, run from the project's folder. Edge by default, `--chromium` when I say so. Since 2026-10-15 it also opens local `.html` files (design mock-ups), emulates a phone with `--mobile`, and can `--click` and `--scroll-in` (for example a wheel picker) before the shot, printing any page errors. The comments at the top of the file list every option. `HOW_I_WORK.md` has the rules |
 | Starting a project, or adding a feature | No skill. `HOW_I_WORK.md` requires a `product_sense.md` first, and the pain written down before any new feature |
 
 ### Commands I can type
@@ -117,7 +117,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `/copywriting` | Writes or improves marketing copy | Everywhere |
 | `/showcase` | Reel ideas and hooks, or X posts, for a finished app | Everywhere |
 | `/frontend-slides` | Builds an animated HTML presentation, or converts a PowerPoint file | Everywhere |
-| `/idea-playbook` | Loads the Idea Playbook and works out which of its six steps a hunt has reached. It also loads by itself when I say I don't know what to build | Only in `D:\FounderMode\planning`, in both tools |
+| `/idea-playbook` | Loads the Idea Playbook and works out which of its six steps a hunt has reached. It also loads by itself when I say I don't know what to build | Only in `D:\FounderMode\ideation`, in both tools |
 | `/customer-research` | Reads what people say in public (forums, Reddit, review sites) and ranks their complaints, or digests interviews and reviews I already have. Step B of the Idea Playbook | Everywhere, and in Codex |
 | `/website-playbook` | Loads the Website Playbook, works out which stage the project is in, and checks the gate before it. It also loads by itself when the work is a client website | Everywhere, and in Codex |
 | `/interface-design`, `/frontend-design` | Design skills, see the Design table above | Everywhere |
@@ -137,25 +137,25 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `interface-design` | skill | same | dammyjay93/interface-design |
 | `vercel-react-best-practices` | skill | same | vercel-labs/agent-skills |
 | `writing-plans` | skill | same | obra/superpowers |
-| `showcase` | skill | `Apps\build_os\skills\showcase`, linked into both tools. Moved here on 2026-10-12 from its own project | own |
+| `showcase` | skill | `build_os\skills\showcase`, linked into both tools. Moved here on 2026-10-12 from its own project | own |
 | `learn` | skill | `~/.agents/skills`, linked, since 2026-10-12 | own |
 | `humanizer` | skill | same, since 2026-10-12 | not in the lock file |
 | `frontend-slides` | skill | same, since 2026-10-12; added 2026-10-09 | not in the lock file |
 | `teach` 0.6.3 | skill | `~/.claude/skills/teach`, copied from the Codex install on 2026-10-12 | udayanwalvekar/teach |
-| `website-playbook` | skill | `Apps\build_os\skills\website-playbook`, linked into both tools, since 2026-10-12 | own |
-| `build-os` | skill | `Apps\build_os\skills\build-os`, linked into both tools, since 2026-10-15 | own |
-| `idea-playbook` | skill | `Apps\build_os\skills\idea-playbook`, since 2026-10-12. Linked into `D:\FounderMode\planning` only (`.claude\skills` and `.agents\skills`) since 2026-10-13, so it loads only in chats opened there | own |
+| `website-playbook` | skill | `build_os\skills\website-playbook`, linked into both tools, since 2026-10-12 | own |
+| `build-os` | skill | `build_os\skills\build-os`, linked into both tools, since 2026-10-15 | own |
+| `idea-playbook` | skill | `build_os\skills\idea-playbook`, since 2026-10-12. Linked into `D:\FounderMode\ideation` only (`.claude\skills` and `.agents\skills`) since 2026-10-13, so it loads only in chats opened there | own |
 | `customer-research` 2.0.4 | skill | `~/.agents/skills`, linked, since 2026-10-12 | coreyhaines31/marketingskills, the same source as `copywriting` |
 | `frontend-design` 1.1.0 | plugin, switched off on 2026-10-12 | `~/.claude/plugins` | anthropics/claude-code |
 | `ui-ux-pro-max` 2.13.0 | plugin, 7 skills | `~/.claude/plugins` | nextlevelbuilder/ui-ux-pro-max-skill |
 | `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in 39 Next.js projects, and off on purpose in 9 client and static sites | `~/.claude/plugins` | claude-plugins-official |
 | 16 synced skills (pdf, docx, pptx, xlsx, deep-research and others) | skills | `~/.claude/skills/synced` | claude.ai account |
-| How I Work | shared instructions for any AI tool | `Apps\build_os\HOW_I_WORK.md`, pulled into `CLAUDE.md` by an `@` reference line | own |
+| How I Work | shared instructions for any AI tool | `build_os\HOW_I_WORK.md`, pulled into `CLAUDE.md` by an `@` reference line | own |
 | Claude-only rules, 5 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-15 | own |
 
 The first five linked skills are tracked in `~/skills-lock.json`. `customer-research` was installed with the same installer on 2026-10-12, but the installer now keeps its record in a different file, `~/.agents/.skill-lock.json`, so there are two lock files.
 
-**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. Four skills I wrote myself, `showcase`, `website-playbook`, `idea-playbook` and `build-os`, have their real home in `Apps\build_os\skills` so they are kept in git, and both tools link to that. `idea-playbook` is linked from the `planning` folder instead of the user folders, because hunts are the only place it is used. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
+**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. Four skills I wrote myself, `showcase`, `website-playbook`, `idea-playbook` and `build-os`, have their real home in `build_os\skills` so they are kept in git, and both tools link to that. `idea-playbook` is linked from the `ideation` folder instead of the user folders, because hunts are the only place it is used. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
 
 On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were moved into `HOW_I_WORK.md`, word for word. That includes the three added since the first inventory: the product-sense pass, stating the pain before a new feature, and agreeing the hero concept. One rule stayed behind because it names a Claude Code setting (running long commands in the background). The old file is saved at `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move`.
 
@@ -383,7 +383,7 @@ Typed in the Windows PowerShell terminal. They live in my PowerShell profile, `D
 |---|---|---|
 | `apps` | Goes to `D:\FounderMode\Apps` | `apps typeforme` goes straight into that app; Tab completes the name |
 | `web` | Goes to `D:\FounderMode\Websites` | `web kapip_website` goes straight into that site; Tab completes the name |
-| `fm` | Goes to `D:\FounderMode` | `fm planning` goes into that folder, and `fm planning artists` goes one level deeper; Tab completes both names. This is the quick way to `planning` and `Buildweek`, which have no command of their own |
+| `fm` | Goes to `D:\FounderMode` | `fm ideation` goes into that folder, and `fm ideation artists` goes one level deeper; Tab completes both names. This is the quick way to `ideation` and `Buildweek`, which have no command of their own |
 | `lt` | Lists the 10 most recently changed items in the current folder | `lt -n 20` for more, `lt -All` for everything, `lt some\folder` for another folder |
 | `lc` | The same, ordered by when each item was created | Same options as `lt` |
 
@@ -397,8 +397,8 @@ Type the name in the Start Menu, or in mysearchbar (Alt + Space).
 
 | Name | What opens | Where it comes from |
 |---|---|---|
-| Build OS | This doc and the Projects page | `Apps\build_os\launch.ps1` |
-| Hunt Reader | The files of one Idea Playbook hunt, after choosing its folder. Opens in Edge | `Apps\build_os\templates\hunt-reader.html`, added 2026-10-13 |
+| Build OS | This doc and the Projects page | `build_os\launch.ps1` |
+| Hunt Reader | The files of one Idea Playbook hunt, after choosing its folder. Opens in Edge | `build_os\templates\hunt-reader.html`, added 2026-10-13 |
 | mysearchbar | The search bar itself | `Apps\mysearchbar\dist\mysearchbar.exe` |
 | Goal Widget | The goal widget | Installed app, built in `Apps\goal-widget` |
 | Opportunity Dashboard | Not checked | Added between 2026-10-05 and 2026-10-12 |
@@ -412,7 +412,7 @@ Type the name in the Start Menu, or in mysearchbar (Alt + Space).
 
 ### Not set up
 
-- No command of its own for the `Buildweek` or `planning` folder. `fm Buildweek` and `fm planning` cover them.
+- No command of its own for the `Buildweek` or `ideation` folder. `fm Buildweek` and `fm ideation` cover them.
 - No custom keyboard shortcuts inside Claude Code.
 - No git short commands.
 

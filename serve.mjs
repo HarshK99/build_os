@@ -11,7 +11,7 @@ const root = dirname(fileURLToPath(import.meta.url));
 const port = Number(process.env.PORT) || 4321;
 const idleMs = Number(process.env.IDLE_MS) || 3 * 60 * 1000;
 // The folder whose sub-folders are listed on the Projects page: two levels up from here.
-const projectsRoot = process.env.PROJECTS_ROOT || resolve(root, "..", "..");
+const projectsRoot = process.env.PROJECTS_ROOT || resolve(root, "..");
 // Files that live outside this folder but are shown as pages, read live so they never go stale.
 // Delete an entry to remove its page.
 const OUTSIDE_PAGES = {
@@ -164,6 +164,11 @@ async function scanProjects() {
   const jobs = [];
   for (const group of (await list(projectsRoot)).filter(isProjectDir)) {
     const groupDir = join(projectsRoot, group.name);
+    // This folder is one project, not a group: its skills, library and tools are not projects of their own.
+    if (resolve(groupDir) === resolve(root)) {
+      jobs.push(describeProject(groupDir, group.name, basename(projectsRoot)));
+      continue;
+    }
     const entries = await list(groupDir);
     for (const child of entries.filter(isProjectDir)) {
       jobs.push(describeProject(join(groupDir, child.name), child.name, group.name));

@@ -2,7 +2,7 @@
 // already running, or a local HTML file (e.g. a design mock-up). One copy for every
 // project; run it from the project's folder.
 //
-//   node D:\FounderMode\Apps\build_os\tools\shot.mjs [route, URL or .html file] [--w 1280] [--h 900]
+//   node D:\FounderMode\build_os\tools\shot.mjs [route, URL or .html file] [--w 1280] [--h 900]
 //        [--mobile] [--full] [--sel "<css>"] [--name foo] [--motion] [--scroll <px>] [--delay <ms>]
 //        [--click "<target>"]... [--scroll-in "<target>" <px>]... [--chromium]
 //

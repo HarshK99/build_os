@@ -14,7 +14,7 @@ The document covers which tool and skill to use when, what is installed where (C
 | `product_sense.md` | Why this project exists: goal, user, the decision it serves, the pains picked, the first version and how success is measured. |
 | `sync-codex.mjs` | Rewrites Codex's instruction file (`~/.codex/AGENTS.md`) as a copy of `HOW_I_WORK.md`. Run it after changing that file: `node sync-codex.mjs`. |
 | `IDEA_PLAYBOOK.md` | The idea playbook: six steps from "I don't know what to build" to one idea that three real people have confirmed, ready for a product-sense pass. |
-| `skills/idea-playbook/` | A small skill that tells an AI to read `IDEA_PLAYBOOK.md`. Linked into `D:\FounderMode\planning\.claude\skills` and `.agents\skills` only, so it loads in chats opened in the planning folder. |
+| `skills/idea-playbook/` | A small skill that tells an AI to read `IDEA_PLAYBOOK.md`. Linked into `D:\FounderMode\ideation\.claude\skills` and `.agents\skills` only, so it loads in chats opened in the ideation folder. |
 | `CONTENT_PLAYBOOK.md` | The content playbook: how an app becomes reels and X posts. A map of the `showcase` skill. |
 | `skills/showcase/` | The showcase skill: its instructions, one file per mode. Linked into `~/.agents/skills` and `~/.claude/skills`. |
 | `library/showcase/` | What the showcase skill remembers: the voice guide, filed reels, and one folder per app. The skill writes here. |
@@ -70,7 +70,7 @@ To remove it, delete `Hunt Reader.lnk` from that folder.
 
 ## The Projects page
 
-The sidebar has a second page, Projects. It lists every project folder under the folder two levels above this one (here, `D:\FounderMode`), most recently changed first.
+The sidebar has a second page, Projects. It lists every project folder under the folder above this one (here, `D:\FounderMode`), most recently changed first.
 
 - It is read from disk each time the page opens. Nothing is saved, so the list never appears in this repo.
 - Each row shows the name, the folder it sits in, a guess at the kind of project from its files, whether it is on GitHub, and when it last changed.

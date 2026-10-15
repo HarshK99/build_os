@@ -84,7 +84,7 @@ When you report, say which checks you did not run. Never claim a build or test p
 Opening a page to look at it is not a test run, so it does not wait for me. Do it when the work is visual, and before a second attempt at the same visual fix, unless the project's own instructions say not to.
 
 - **Use my dev server.** It is usually already running. Never start one; if none is running, ask me.
-- **Use the shared screenshot tool,** run from the project's folder: `node D:\FounderMode\Apps\build_os\tools\shot.mjs [route]`. The comments at the top of that file list the options.
+- **Use the shared screenshot tool,** run from the project's folder: `node D:\FounderMode\build_os\tools\shot.mjs [route]`. The comments at the top of that file list the options.
 - **Browser.** The tool uses the Edge already on this laptop. Add `--chromium` only when I say to use Chromium.
 - **Don't install** Playwright, Puppeteer or a browser into a project for screenshots, and don't run them through `npx`. A project that uses a browser as part of what it does keeps its own.
 - **Say when a shot was taken with motion off,** which is the tool's default.
