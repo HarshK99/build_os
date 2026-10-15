@@ -39,6 +39,8 @@ Design skills are chosen by the Design Playbook. For everything else:
 | Task | Use |
 |---|---|
 | Looking at a page, or a screenshot | `node D:\FounderMode\build_os\tools\shot.mjs [route]` from the project folder. Edge by default; opens local `.html` mock-ups; `--mobile`, `--click`, `--scroll-in`. Options are at the top of the file. How I Work has the rules |
+| Starting a page from a template, such as image prompts | The Templates page in this viewer. It lists `build_os\templates`; copy one into the project's `docs` |
+| Reading an Idea Playbook hunt | The Hunts page in this viewer, or "Hunt Reader" from the Start Menu |
 | End-of-session learnings | `/learn`, which writes the project's `learnings.md` |
 | Marketing copy | `/copywriting` |
 | Removing AI tone from anything published | `/humanizer`. Not for docs, skills or instructions |

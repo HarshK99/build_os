@@ -3,7 +3,7 @@
 // It stops itself once no page has asked for anything for a few minutes.
 import { createServer } from "node:http";
 import { readFile, readdir, stat } from "node:fs/promises";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, extname, join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
 
@@ -189,6 +189,42 @@ async function scanProjects() {
   return projectsCache.body;
 }
 
+// ---- Templates and hunts: two more folders the viewer reads ----
+
+// Pages meant to be copied into a project, such as the image-prompt page.
+const templatesDir = join(root, "templates");
+// Idea Playbook hunts, one folder each, read live like the pages in this folder.
+const huntsRoot = process.env.HUNTS_ROOT || resolve(root, "..", "ideation");
+// A hunt's files in the order the playbook's steps write them; anything else after, by name.
+const HUNT_ORDER = ["research.md", "directions.md", "product_sense.md"];
+const FILE_TYPES = {
+  ".html": "text/html; charset=utf-8", ".css": "text/css; charset=utf-8", ".js": "text/javascript; charset=utf-8",
+  ".svg": "image/svg+xml", ".png": "image/png", ".jpg": "image/jpeg", ".webp": "image/webp",
+};
+// A plain file or folder name: no path separators, no "..", nothing hidden.
+const plainName = (name) => name === basename(name) && !name.startsWith(".") && !/[\\/]/.test(name);
+
+async function listTemplates() {
+  const files = (await list(templatesDir)).filter((e) => !e.isDirectory() && e.name.endsWith(".html"));
+  return Promise.all(files.map(async ({ name }) => {
+    const html = await readFile(join(templatesDir, name), "utf8").catch(() => "");
+    const meta = (key) => html.match(new RegExp(`<meta name="${key}" content="([^"]*)"`))?.[1] || "";
+    return { file: name, title: html.match(/<title>([^<]*)<\/title>/)?.[1] || name, about: meta("description") };
+  }));
+}
+
+async function listHunts() {
+  const hunts = [];
+  for (const dir of (await list(huntsRoot)).filter(isProjectDir)) {
+    const full = join(huntsRoot, dir.name);
+    const names = (await list(full)).filter((e) => !e.isDirectory() && e.name.toLowerCase().endsWith(".md")).map((e) => e.name);
+    const rank = (n) => (HUNT_ORDER.indexOf(n) + 1) || HUNT_ORDER.length + 1;
+    names.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
+    hunts.push({ name: dir.name, files: names, changed: await newestChange(full, 1) || (await changedAt(full)) });
+  }
+  return hunts.sort((a, b) => b.changed - a.changed);
+}
+
 // ---- Server ----
 
 const server = createServer(async (req, res) => {
@@ -212,6 +248,27 @@ const server = createServer(async (req, res) => {
     }
     if (path === "/_projects") {
       return send(res, 200, "application/json", await scanProjects());
+    }
+    if (path === "/_templates") {
+      return send(res, 200, "application/json", JSON.stringify(await listTemplates()));
+    }
+    if (path === "/_hunts") {
+      return send(res, 200, "application/json", JSON.stringify({ root: huntsRoot, hunts: await listHunts() }));
+    }
+    // /templates/<file>: one file straight inside the templates folder.
+    if (path.startsWith("/templates/")) {
+      const file = path.slice("/templates/".length);
+      const type = FILE_TYPES[extname(file).toLowerCase()];
+      if (!plainName(file) || !type) return send(res, 404, "text/plain", "Not found");
+      return send(res, 200, type, await readFile(join(templatesDir, file)));
+    }
+    // /_hunt/<hunt>/<file>.md: one markdown file straight inside one hunt's folder.
+    if (path.startsWith("/_hunt/")) {
+      const [hunt, file, ...rest] = path.slice("/_hunt/".length).split("/");
+      if (rest.length || !plainName(hunt || "") || !plainName(file || "") || !file.toLowerCase().endsWith(".md")) {
+        return send(res, 404, "text/plain", "Not found");
+      }
+      return send(res, 200, "text/markdown; charset=utf-8", await readFile(join(huntsRoot, hunt, file)));
     }
     // Only markdown files that sit directly in this folder are served.
     const name = basename(path);

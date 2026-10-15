@@ -102,3 +102,7 @@ Counted over my next three projects or features, under "Runs" in `LOG.md`.
 - Should Codex follow the same shared file, and how is its copy kept current?
 - Is `ui-ux-pro-max` worth keeping switched on everywhere?
 - For the side goal: the inventory was out of date within a week. How current does it need to be, and who refreshes it?
+
+## 11. Feature pains
+
+**Templates page, 2026-10-15.** When I start a new site's image prompts, I'm trying to begin from the best version of the page, but I copy whichever project I did last, because the page lived only inside projects, which costs me the fixes made since. This happens on every new site with generated images.

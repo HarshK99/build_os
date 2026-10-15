@@ -84,7 +84,7 @@ Claude cannot use these; it does not load the profile.
 | Name | Opens |
 |---|---|
 | Build OS | This folder's viewer, through `launch.ps1` |
-| Hunt Reader | One Idea Playbook hunt's files, in Edge, from `founder_os\templates\hunt-reader.html` |
+| Hunt Reader | The viewer at its Hunts page, through `launch.ps1 -Page "?page=hunts"` |
 | mysearchbar | `Apps\mysearchbar\dist\mysearchbar.exe`. Starts with Windows |
 | Goal Widget | Built in `Apps\goal-widget`. Starts with Windows |
 | Opportunity Dashboard | Not checked |

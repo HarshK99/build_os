@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Build OS</title>
+<link rel="icon" href="data:,">
 <script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
 <style>
   :root {
@@ -11,10 +12,14 @@
     --panel: #f7f8fa;
     --text: #1f2430;
     --muted: #667085;
+    --faint: #98a2b3;
     --line: #e4e7ec;
     --accent: #4f46e5;
     --accent-soft: #eef0ff;
     --code-bg: #f1f3f6;
+    --near: #0f7a4d; --near-soft: #e3f6ec;
+    --mid: #9a6200; --mid-soft: #fdf1d8;
+    --far: #667085; --far-soft: #eceef2;
   }
   @media (prefers-color-scheme: dark) {
     :root {
@@ -22,10 +27,14 @@
       --panel: #151821;
       --text: #e3e6ec;
       --muted: #98a1b3;
+      --faint: #6b7385;
       --line: #262b37;
       --accent: #9aa2ff;
       --accent-soft: #1e2140;
       --code-bg: #1c202b;
+      --near: #6fdca6; --near-soft: #12301f;
+      --mid: #f0c36a; --mid-soft: #35290f;
+      --far: #98a1b3; --far-soft: #222733;
     }
   }
   * { box-sizing: border-box; }
@@ -35,29 +44,35 @@
     background: var(--bg);
     color: var(--text);
     font: 16px/1.65 -apple-system, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
   }
-  .layout { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
 
-  aside {
+  /* Three columns: where I can go · what I'm reading · where I am in it. */
+  .layout { display: grid; grid-template-columns: 248px minmax(0, 1fr) 232px; min-height: 100vh; }
+
+  .nav {
     position: sticky; top: 0; height: 100vh; overflow-y: auto;
     background: var(--panel); border-right: 1px solid var(--line);
-    padding: 28px 16px 40px;
+    padding: 24px 12px 40px;
   }
-  .brand { font-weight: 700; font-size: 18px; padding: 0 10px 18px; letter-spacing: -0.01em; }
+  .brand { font-weight: 700; font-size: 17px; padding: 0 10px 16px; letter-spacing: -0.01em; }
   .label {
     font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
-    color: var(--muted); padding: 14px 10px 6px;
+    color: var(--faint); padding: 18px 10px 4px;
   }
-  aside a {
-    display: block; padding: 6px 10px; border-radius: 6px;
+  .nav a {
+    display: block; padding: 5px 10px; border-radius: 6px;
     color: var(--muted); text-decoration: none; font-size: 14px; line-height: 1.4;
   }
-  aside a:hover { color: var(--text); background: var(--line); }
-  aside a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
-  aside a.sub { padding-left: 24px; font-size: 13px; }
+  .nav a:hover { color: var(--text); background: var(--line); }
+  .nav a.active { color: var(--accent); background: var(--accent-soft); font-weight: 600; }
+  /* An open hunt's files, under "Hunts". */
+  .nav a.sub { padding: 3px 10px 3px 24px; font-size: 13px; }
+  .nav a.sub.active { background: none; }
+  #pagesBox > summary { display: none; }
 
   #search {
-    width: 100%; padding: 8px 10px; border-radius: 6px; border: 1px solid var(--line);
+    width: 100%; padding: 7px 10px; border-radius: 6px; border: 1px solid var(--line);
     background: var(--bg); color: var(--text); font: inherit; font-size: 14px;
   }
   #search:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
@@ -70,14 +85,28 @@
   #results .none { padding: 7px 10px; font-size: 13px; color: var(--muted); }
   .flash { transition: background 0.3s; border-radius: 4px; }
 
-  main { padding: 48px 56px 120px; max-width: 980px; }
-  main h1 { font-size: 34px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 12px; }
+  /* The page's own headings: quieter than the page list, marked by a line, not a fill. */
+  .toc { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 48px 20px 40px 8px; }
+  .toc .label { padding: 0 0 8px 12px; }
+  .toc a, .contents a {
+    display: block; padding: 3px 0 3px 12px; border-left: 2px solid var(--line);
+    color: var(--muted); text-decoration: none; font-size: 13px; line-height: 1.45;
+  }
+  .toc a:hover, .contents a:hover { color: var(--text); }
+  .toc a.sub, .contents a.sub { padding-left: 24px; font-size: 12.5px; color: var(--faint); }
+  .toc a.active { color: var(--accent); border-left-color: var(--accent); }
+  .contents { display: none; margin: 0 0 24px; border: 1px solid var(--line); border-radius: 8px; padding: 4px 14px; }
+  .contents summary { cursor: pointer; font-size: 14px; font-weight: 600; color: var(--muted); padding: 8px 0; }
+  .contents[open] { padding-bottom: 12px; }
+
+  main { padding: 48px 56px 120px; max-width: 920px; }
+  main h1 { font-size: 34px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 12px; text-wrap: balance; }
   main h2 {
     font-size: 24px; letter-spacing: -0.01em; margin: 56px 0 14px;
     padding-top: 28px; border-top: 1px solid var(--line);
   }
   main h3 { font-size: 18px; margin: 32px 0 10px; }
-  main p, main li { color: var(--text); }
+  main p, main li { color: var(--text); text-wrap: pretty; }
   main a { color: var(--accent); }
   main ul, main ol { padding-left: 22px; }
   main li { margin: 6px 0; }
@@ -92,7 +121,7 @@
   th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
   th { background: var(--panel); font-weight: 600; font-size: 13px; color: var(--muted); white-space: nowrap; }
   tr:last-child td { border-bottom: none; }
-  .error { color: var(--muted); padding: 24px 0; }
+  .error, .empty { color: var(--muted); padding: 24px 0; }
 
   .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 4px; }
   .filters button {
@@ -101,50 +130,165 @@
   }
   .filters button:hover { color: var(--text); }
   .filters button.on { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
-  .filters button span { opacity: 0.7; margin-left: 2px; }
+  .filters button span { opacity: 0.7; margin-left: 2px; font-variant-numeric: tabular-nums; }
   td .parts { display: block; font-size: 12.5px; color: var(--muted); }
-  td.nowrap { white-space: nowrap; }
+  td .path { display: block; font: 12px/1.5 ui-monospace, "Cascadia Code", Consolas, monospace; color: var(--faint); white-space: nowrap; }
+  td.nowrap { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td a.view { font-weight: 600; text-decoration: none; }
+  td a.view:hover { text-decoration: underline; }
 
+  /* In a hunt: how far a quote's author is from the group the hunt is about. */
+  .tier {
+    display: inline-block; font-size: 11.5px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase;
+    padding: 1px 8px; border-radius: 999px; vertical-align: 1px;
+  }
+  .tier.near { color: var(--near); background: var(--near-soft); }
+  .tier.mid { color: var(--mid); background: var(--mid-soft); }
+  .tier.far { color: var(--far); background: var(--far-soft); }
+  li.off { display: none; }
+
+  @media (max-width: 1200px) {
+    .layout { grid-template-columns: 248px minmax(0, 1fr); }
+    .toc { display: none; }
+    .contents:not([hidden]) { display: block; }
+  }
   @media (max-width: 860px) {
     .layout { grid-template-columns: minmax(0, 1fr); }
-    aside { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); }
-    main { padding: 28px 18px 80px; }
+    .nav { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--line); padding: 16px 16px 12px; }
+    .brand { padding: 0 0 12px; }
+    #pagesBox > summary {
+      display: flex; justify-content: space-between; cursor: pointer; list-style: none;
+      font-size: 14px; font-weight: 600; color: var(--muted); padding: 12px 0 4px;
+    }
+    #pagesBox > summary::after { content: "▾"; }
+    #pagesBox[open] > summary::after { content: "▴"; }
+    main { padding: 24px 16px 80px; }
   }
 </style>
 </head>
 <body>
 <div class="layout">
-  <aside>
+  <aside class="nav">
     <div class="brand">Build OS</div>
     <input id="search" type="search" placeholder="Search this page" autocomplete="off">
     <div id="results"></div>
-    <div id="docs"></div>
-    <div class="label" id="tocLabel">On this page</div>
-    <nav id="toc"></nav>
+    <details id="pagesBox" open>
+      <summary>Pages</summary>
+      <nav id="docs"></nav>
+    </details>
   </aside>
   <main id="content"></main>
+  <aside class="toc" id="tocCol">
+    <div class="label">On this page</div>
+    <nav id="toc"></nav>
+  </aside>
 </div>
 
 <script>
 const content = document.getElementById("content");
 const toc = document.getElementById("toc");
+const tocCol = document.getElementById("tocCol");
 const docsNav = document.getElementById("docs");
-const tocLabel = document.getElementById("tocLabel");
 const params = new URLSearchParams(location.search);
-const onProjects = params.get("page") === "projects";
+const page = params.get("page");
+const hunt = params.get("hunt");
 let current = params.get("doc") || "BUILD_OS.md";
+let huntFile = params.get("file");
 let projectFilter = "All";
+let tierFilter = "all";
+let hunts = [];
 let observer;
 
 const slug = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 const esc = (text) => String(text).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const pageName = (file) => file.replace(/\.md$/i, "").replace(/_/g, " ").toLowerCase().replace(/\b[a-z]/g, (c) => c.toUpperCase()).replace(/\bOs\b/, "OS");
+const day = (ms) => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+
+// The sidebar's groups. A page not listed here lands in "Other", so a new .md file still shows up.
+// A "?…" entry is a page the viewer builds itself rather than a .md file.
+const GROUPS = [
+  ["Build OS", [["BUILD_OS.md", "Build OS"], ["SETUP.md", "Setup"], ["LOG.md", "Log"], ["product_sense.md", "Why Build OS exists"]]],
+  ["Playbooks", [["PRODUCT_SENSE_PLAYBOOK.md", "Product sense"], ["APP_PLAYBOOK.md", "App"], ["DESIGN_PLAYBOOK.md", "Design"], ["WEBSITE_PLAYBOOK.md", "Website"], ["CONTENT_PLAYBOOK.md", "Content"]]],
+  ["Founder OS", [["FOUNDER_OS.md", "Founder OS"], ["IDEA_PLAYBOOK.md", "Idea playbook"], ["?hunts", "Hunts"]]],
+  ["Rules", [["HOW_I_WORK.md", "How I Work"], ["CLAUDE_INSTRUCTIONS.md", "Claude rules"]]],
+  ["Tools", [["?projects", "Projects"], ["?templates", "Templates"]]],
+];
+
+const huntHref = (name, file) => `?hunt=${encodeURIComponent(name)}` + (file ? `&file=${encodeURIComponent(file)}` : "");
 
 async function loadDocList() {
   const docs = await fetch("/_docs").then((r) => r.json()).catch(() => ["BUILD_OS.md"]);
-  docsNav.innerHTML = '<div class="label">Pages</div>' + docs.map((d) =>
-    `<a href="?doc=${encodeURIComponent(d)}" class="${!onProjects && d === current ? "active" : ""}">${esc(pageName(d))}</a>`
-  ).join("") + `<a href="?page=projects" class="${onProjects ? "active" : ""}">Projects</a>`;
+  const link = (href, label, on, cls = "") => `<a href="${href}" class="${cls} ${on ? "active" : ""}">${esc(label)}</a>`;
+  const listed = new Set(GROUPS.flatMap(([, items]) => items.map(([file]) => file)));
+  const others = docs.filter((d) => !listed.has(d));
+
+  const entry = ([file, label]) => {
+    if (file === "?hunts") {
+      // An open hunt lists its own files under this entry.
+      const open = hunts.find((h) => h.name === hunt);
+      return link("?page=hunts", label, page === "hunts" || !!hunt) +
+        (open ? link(huntHref(open.name), open.name, false, "sub") +
+          open.files.map((f) => link(huntHref(open.name, f), pageName(f), f === huntFile, "sub")).join("") : "");
+    }
+    if (file.startsWith("?")) return link(`?page=${file.slice(1)}`, label, page === file.slice(1));
+    return docs.includes(file) ? link(`?doc=${encodeURIComponent(file)}`, label, !page && !hunt && file === current) : "";
+  };
+
+  let html = GROUPS.map(([title, items]) => {
+    const links = items.map(entry).join("");
+    return links ? `<div class="label">${esc(title)}</div>${links}` : "";
+  }).join("");
+  if (others.length) html += '<div class="label">Other</div>' + others.map((d) => link(`?doc=${encodeURIComponent(d)}`, pageName(d), !page && !hunt && d === current)).join("");
+  docsNav.innerHTML = html;
+}
+
+async function loadHunts() {
+  const data = await fetch("/_hunts").then((r) => r.json()).catch(() => null);
+  hunts = data?.hunts || [];
+  return data;
+}
+
+function setToc(headings) {
+  observer?.disconnect();
+  toc.innerHTML = "";
+  tocCol.hidden = headings.length === 0;
+  content.querySelector(".contents")?.remove();
+  if (!headings.length) return;
+
+  const seen = {};
+  const links = headings.map((h) => {
+    let id = slug(h.textContent);
+    seen[id] = (seen[id] || 0) + 1;
+    if (seen[id] > 1) id += "-" + seen[id];
+    h.id = id;
+    return `<a href="#${id}" class="${h.tagName === "H3" ? "sub" : ""}">${esc(h.textContent)}</a>`;
+  }).join("");
+  toc.innerHTML = links;
+
+  // On narrower screens the right column is gone, so the same list folds in above the page.
+  const box = document.createElement("details");
+  box.className = "contents";
+  box.innerHTML = `<summary>Contents</summary>${links}`;
+  const title = content.querySelector("h1");
+  title ? title.after(box) : content.prepend(box);
+  box.addEventListener("click", (e) => { if (e.target.tagName === "A") box.open = false; });
+
+  observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      toc.querySelectorAll("a").forEach((a) =>
+        a.classList.toggle("active", a.getAttribute("href") === "#" + entry.target.id));
+    });
+  }, { rootMargin: "0px 0px -75% 0px" });
+  headings.forEach((h) => observer.observe(h));
+}
+
+function filterButtons(items, key, chosen) {
+  const counts = {};
+  items.forEach((item) => { counts[item[key]] = (counts[item[key]] || 0) + 1; });
+  return [["All", items.length], ...Object.entries(counts).sort((a, b) => b[1] - a[1])]
+    .map(([name, n]) => `<button data-value="${esc(name)}" class="${name === chosen ? "on" : ""}">${esc(name)} <span>${n}</span></button>`)
+    .join("");
 }
 
 // Every project folder, read live from disk by the viewer.
@@ -158,16 +302,8 @@ async function renderProjects() {
     content.innerHTML = '<p class="error">Could not read the project folders. Close this tab and open Build OS again from the Start Menu.</p>';
     return;
   }
-
-  const counts = {};
-  data.projects.forEach((p) => { counts[p.group] = (counts[p.group] || 0) + 1; });
-  if (projectFilter !== "All" && !counts[projectFilter]) projectFilter = "All";
+  if (projectFilter !== "All" && !data.projects.some((p) => p.group === projectFilter)) projectFilter = "All";
   const shown = data.projects.filter((p) => projectFilter === "All" || p.group === projectFilter);
-
-  const buttons = [["All", data.projects.length], ...Object.entries(counts).sort((a, b) => b[1] - a[1])]
-    .map(([group, n]) => `<button data-group="${esc(group)}" class="${group === projectFilter ? "on" : ""}">${esc(group)} <span>${n}</span></button>`)
-    .join("");
-  const day = (ms) => new Date(ms).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
   const rows = shown.map((p) => `<tr>
       <td><strong>${esc(p.name)}</strong>${p.parts.length ? `<span class="parts">${esc(p.parts.join(", "))}</span>` : ""}</td>
       <td>${esc(p.group)}</td>
@@ -179,35 +315,131 @@ async function renderProjects() {
   const scroll = window.scrollY;
   content.innerHTML = `<h1>Projects</h1>
     <p>${data.projects.length} project folders in <code>${esc(data.root)}</code>, most recently changed first. Read from disk each time this page opens; nothing is saved.</p>
-    <div class="filters">${buttons}</div>
+    <div class="filters">${filterButtons(data.projects, "group", projectFilter)}</div>
     <div class="table-wrap"><table>
       <thead><tr><th>Project</th><th>Folder</th><th>Kind</th><th>Git</th><th>Last changed</th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
   content.querySelectorAll(".filters button").forEach((button) =>
-    button.addEventListener("click", () => { projectFilter = button.dataset.group; renderProjects(); }));
-
-  observer?.disconnect();
-  toc.innerHTML = "";
-  tocLabel.hidden = true;
+    button.addEventListener("click", () => { projectFilter = button.dataset.value; renderProjects(); }));
+  setToc([]);
   document.title = "Projects";
   window.scrollTo(0, scroll);
   runSearch();
 }
 
+// Pages meant to be copied into a project and filled in, kept in build_os\templates.
+async function renderTemplates() {
+  let templates;
+  try {
+    const res = await fetch("/_templates");
+    if (!res.ok) throw new Error(res.status);
+    templates = await res.json();
+  } catch {
+    content.innerHTML = '<p class="error">Could not read the templates folder. Close this tab and open Build OS again from the Start Menu.</p>';
+    return;
+  }
+  const rows = templates.map((t) => `<tr>
+      <td><a class="view" href="/templates/${encodeURIComponent(t.file)}" target="_blank" rel="noopener">${esc(t.title)}</a><span class="path">templates/${esc(t.file)}</span></td>
+      <td>${esc(t.about)}</td>
+    </tr>`).join("");
+  content.innerHTML = `<h1>Templates</h1>
+    <p>Pages to copy into a project and fill in. Open one to preview it. To use it, copy the file into the project's <code>docs</code> folder and replace the block marked at the top of its script. A fix to a template's code goes into the file here too, so later projects get it.</p>
+    ${templates.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Template</th><th>What it is for</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>` : '<p class="empty">No templates yet. Put an .html file in <code>build_os\\templates</code> and it shows here.</p>'}`;
+  setToc([]);
+  document.title = "Templates";
+  runSearch();
+}
+
+// Every Idea Playbook hunt: one folder each in the ideation folder.
+async function renderHunts() {
+  const data = await loadHunts();
+  if (!data) {
+    content.innerHTML = '<p class="error">Could not read the hunts folder. Close this tab and open Build OS again from the Start Menu.</p>';
+    return;
+  }
+  const rows = data.hunts.map((h) => `<tr>
+      <td><a class="view" href="${huntHref(h.name)}">${esc(h.name)}</a></td>
+      <td>${h.files.length ? h.files.map((f) => `<a href="${huntHref(h.name, f)}">${esc(pageName(f))}</a>`).join(", ") : '<span class="parts">No .md files yet</span>'}</td>
+      <td class="nowrap">${day(h.changed)}</td>
+    </tr>`).join("");
+  content.innerHTML = `<h1>Hunts</h1>
+    <p>Idea Playbook hunts in <code>${esc(data.root)}</code>, one folder each, most recently changed first. Their files are read live, like every other page here.</p>
+    ${data.hunts.length ? `<div class="table-wrap"><table>
+      <thead><tr><th>Hunt</th><th>Files</th><th>Last changed</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>` : '<p class="empty">No hunts yet. A hunt starts as a folder in the ideation folder; the Idea Playbook says how.</p>'}`;
+  setToc([]);
+  document.title = "Hunts";
+  loadDocList();
+  runSearch();
+}
+
+// A quote line marked **near**, **mid** or **far** gets a coloured tag, and the page a filter.
+function markTiers() {
+  const isTier = (el) => /^(near|mid|far)$/.test(el.textContent);
+  // A line that names more than one is the explanation of the marks, not a quote.
+  const marks = [...content.querySelectorAll("li strong")].filter((el) =>
+    isTier(el) && [...el.closest("li").querySelectorAll("strong")].filter(isTier).length === 1);
+  marks.forEach((el) => {
+    const tag = document.createElement("span");
+    tag.className = "tier " + el.textContent;
+    tag.textContent = el.textContent;
+    el.replaceWith(tag);
+  });
+  if (marks.length < 4) return;
+
+  const apply = () => {
+    content.querySelectorAll("li").forEach((li) => {
+      const tier = li.querySelector(":scope > .tier, :scope > p > .tier");
+      li.classList.toggle("off", tierFilter !== "all" && !!tier && !tier.classList.contains(tierFilter));
+    });
+    bar.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.value === tierFilter));
+  };
+  const count = (tier) => content.querySelectorAll(".tier." + tier).length;
+  const bar = document.createElement("div");
+  bar.className = "filters";
+  bar.innerHTML = [["all", "All quotes", marks.length], ["near", "Near", count("near")], ["mid", "Mid", count("mid")], ["far", "Far", count("far")]]
+    .map(([tier, label, n]) => `<button data-value="${tier}">${label} <span>${n}</span></button>`).join("");
+  bar.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => { tierFilter = b.dataset.value; apply(); }));
+  content.querySelector("h1")?.after(bar);
+  apply();
+}
+
 async function render() {
-  if (onProjects) return renderProjects();
+  if (page === "projects") return renderProjects();
+  if (page === "templates") return renderTemplates();
+  if (page === "hunts") return renderHunts();
+  let source = "/" + encodeURIComponent(current);
+  if (hunt) {
+    await loadHunts();
+    const open = hunts.find((h) => h.name === hunt);
+    if (!open?.files.includes(huntFile)) huntFile = open?.files[0];
+    if (!huntFile) {
+      content.innerHTML = `<h1>${esc(hunt)}</h1><p class="empty">No .md files in this hunt yet.</p>`;
+      setToc([]);
+      loadDocList();
+      return;
+    }
+    source = `/_hunt/${encodeURIComponent(hunt)}/${encodeURIComponent(huntFile)}`;
+    loadDocList();
+  }
   let md;
   try {
-    const res = await fetch("/" + encodeURIComponent(current));
+    const res = await fetch(source);
     if (!res.ok) throw new Error(res.status);
     md = await res.text();
   } catch {
-    content.innerHTML = `<p class="error">Could not load ${current}. Start the viewer with <code>node serve.mjs</code> and open http://localhost:4321.</p>`;
+    content.innerHTML = `<p class="error">Could not load ${esc(hunt ? huntFile : current)}. Start the viewer with <code>node serve.mjs</code> and open http://localhost:4321.</p>`;
     return;
   }
 
   const scroll = window.scrollY;
+  const box = content.querySelector(".contents");
+  const wasOpen = box?.open;
   content.innerHTML = window.marked ? marked.parse(md) : `<pre>${md.replace(/</g, "&lt;")}</pre>`;
 
   content.querySelectorAll("table").forEach((table) => {
@@ -216,35 +448,14 @@ async function render() {
     table.replaceWith(wrap);
     wrap.appendChild(table);
   });
+  // Links to the web open in a new tab, so the page stays where it was.
+  content.querySelectorAll('a[href^="http"]').forEach((a) => { a.target = "_blank"; a.rel = "noopener"; });
+  if (hunt) markTiers();
 
-  const headings = [...content.querySelectorAll("h2, h3")];
-  const seen = {};
-  toc.innerHTML = "";
-  tocLabel.hidden = headings.length === 0;
-  headings.forEach((h) => {
-    let id = slug(h.textContent);
-    seen[id] = (seen[id] || 0) + 1;
-    if (seen[id] > 1) id += "-" + seen[id];
-    h.id = id;
-    const a = document.createElement("a");
-    a.href = "#" + id;
-    a.textContent = h.textContent;
-    if (h.tagName === "H3") a.className = "sub";
-    toc.appendChild(a);
-  });
-
-  observer?.disconnect();
-  observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (!entry.isIntersecting) return;
-      toc.querySelectorAll("a").forEach((a) =>
-        a.classList.toggle("active", a.getAttribute("href") === "#" + entry.target.id));
-    });
-  }, { rootMargin: "0px 0px -75% 0px" });
-  headings.forEach((h) => observer.observe(h));
-
+  setToc([...content.querySelectorAll("h2, h3")]);
+  if (wasOpen) content.querySelector(".contents").open = true;
   const title = content.querySelector("h1");
-  if (title) document.title = title.textContent;
+  document.title = title ? title.textContent : hunt ? `${hunt} hunt` : "Build OS";
   window.scrollTo(0, scroll);
   runSearch();
 }
@@ -261,6 +472,7 @@ function runSearch() {
   let heading = "";
   let count = 0;
   for (const el of content.querySelectorAll("h1, h2, h3, p, li, tr")) {
+    if (el.closest(".contents")) continue;
     if (/^H[1-3]$/.test(el.tagName)) heading = el.textContent;
     if (el.tagName === "P" && el.closest("li")) continue;
     if (el.tagName === "TR" && el.querySelector("th")) continue;
@@ -297,6 +509,9 @@ search.addEventListener("input", runSearch);
 search.addEventListener("keydown", (event) => {
   if (event.key === "Enter") results.querySelector("a")?.click();
 });
+
+// On a phone the page list starts folded, so the page itself comes first.
+if (matchMedia("(max-width: 860px)").matches) document.getElementById("pagesBox").open = false;
 
 loadDocList();
 render().then(() => {

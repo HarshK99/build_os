@@ -153,7 +153,7 @@ Follow the Design Playbook (`DESIGN_PLAYBOOK.md`), website column. It holds the 
 
 Written once the composition is set, because each prompt depends on where its image sits.
 
-- `docs/image-prompts.html` is the only list: one card per image slot, with copy buttons and tick-boxes, checked against the data file's image paths. `docs/IMAGE_PROMPTS.md` keeps only the reasons behind the look. Until the kit has the page (section 11), copy `Websites\ne_synth\docs\image-prompts.html` and replace the block at the top of its script.
+- `docs/image-prompts.html` is the only list: one card per image slot, with copy buttons and tick-boxes, checked against the data file's image paths. `docs/IMAGE_PROMPTS.md` keeps only the reasons behind the look. Start from `D:\FounderMode\build_os\templates\image-prompts.html`: copy it into `docs/` and replace the block at the top of its script. A fix to the page's code goes into the template too, so later sites get it.
 - Every prompt opens with one shared "look" paragraph, written from the hero image, so the set reads as one shoot.
 - Every prompt says where the subject goes, how much empty space surrounds it, and which part must stay calm for text. Left alone, a generator fills the frame, and the subject loses its edges or ends up under the text.
 - No text, lettering or logos in an image. Generators garble them.
@@ -294,7 +294,7 @@ Build it from the files of the first site that goes through the playbook, not in
 | Scripts: placeholders, image optimising, leak check, deploy | A different copy in each project |
 | Client intake and asset-request sheet | The web-studio pages |
 | Launch checklist as a file per project | `Websites\ne_synth\docs\LAUNCH.md` |
-| Image-prompt page and PNG-to-JPG script | ne_synth's `docs\image-prompts.html` (its project-specific block is at the top of its script) and `scripts\fit-images.mjs`. Keep the page's "Copy file name" button, because generators name downloads themselves. The script turns a generator's ~2.5 MB PNG into a JPG when it is added; originals stay out of git |
+| PNG-to-JPG script | ne_synth's `scripts\fit-images.mjs`. It turns a generator's ~2.5 MB PNG into a JPG when it is added; originals stay out of git. The image-prompt page is already a template, in `build_os\templates` |
 
 Once the kit exists, the two lizen skills stop being used as general standards.
 

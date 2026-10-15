@@ -1,5 +1,7 @@
 # Opens the Build OS docs. Starts the viewer hidden if it is not already running,
-# then opens the page in the default browser. Run by the "Build OS" Start Menu shortcut.
+# then opens the page in the default browser. Run by the "Build OS" Start Menu shortcut,
+# and by "Hunt Reader" with -Page "?page=hunts".
+param([string]$Page = "")
 $port = 4321
 
 function Test-Viewer {
@@ -20,4 +22,4 @@ if (-not (Test-Viewer)) {
   }
 }
 
-Start-Process "http://localhost:$port"
+Start-Process "http://localhost:$port/$Page"

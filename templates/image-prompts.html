@@ -1,0 +1,451 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Image prompts</title>
+<meta name="description" content="One card per image slot on a website: the prompt to paste into an image generator, a copy button, the file name, and a tick-box. Stage 4 of the Website Playbook." />
+<style>
+  /* Colours: set these to the site's own, so the page feels like the project. */
+  :root {
+    --ink: #1f2430;
+    --ink-soft: #5b6475;
+    --bar: #1f2430;
+    --accent: #4f46e5;
+    --canvas: #ffffff;
+    --canvas-alt: #f4f5f7;
+    --rule: #dfe3ea;
+    --good: #15803d;
+    --header-h: 57px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+  }
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 20;
+    height: var(--header-h);
+    background: var(--bar);
+    color: #fff;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+  }
+  header h1 { font-size: 1.05rem; margin: 0; font-weight: 700; letter-spacing: 0.01em; }
+  #progress { font-size: 0.85rem; opacity: 0.8; margin-left: auto; white-space: nowrap; }
+
+  .layout { display: flex; align-items: flex-start; max-width: 1180px; margin: 0 auto; }
+
+  .sidebar {
+    position: sticky;
+    top: var(--header-h);
+    flex: 0 0 240px;
+    max-height: calc(100svh - var(--header-h));
+    overflow-y: auto;
+    padding: 1.25rem 0.75rem 2rem 1.5rem;
+    border-right: 1px solid var(--rule);
+  }
+  .sidebar .sb-group {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-soft);
+    margin: 1.25rem 0 0.4rem;
+  }
+  .sidebar .sb-group:first-child { margin-top: 0; }
+  .sidebar a {
+    display: flex;
+    align-items: baseline;
+    gap: 0.45rem;
+    text-decoration: none;
+    color: var(--ink);
+    font-size: 0.83rem;
+    line-height: 1.35;
+    padding: 0.32rem 0.5rem;
+    border-radius: 5px;
+    border-left: 2px solid transparent;
+  }
+  .sidebar a:hover { background: var(--canvas-alt); }
+  .sidebar a.active { background: var(--canvas-alt); border-left-color: var(--accent); font-weight: 600; }
+  .sidebar a .sb-num { flex-shrink: 0; color: var(--ink-soft); font-variant-numeric: tabular-nums; width: 1.3em; }
+  .sidebar a.sb-done .sb-title { color: var(--ink-soft); text-decoration: line-through; }
+  .sidebar a.sb-done .sb-num::after { content: "✓"; color: var(--good); margin-left: 0.15em; }
+
+  main { flex: 1; min-width: 0; max-width: 880px; padding: 1.5rem 1.5rem 4rem; }
+
+  @media (max-width: 820px) {
+    .layout { flex-direction: column; }
+    .sidebar {
+      position: static;
+      flex-basis: auto;
+      max-height: none;
+      width: 100%;
+      border-right: none;
+      border-bottom: 1px solid var(--rule);
+      padding: 0.9rem 1rem;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 0.3rem;
+    }
+    .sidebar .sb-group { display: none; }
+    .sidebar a { flex-shrink: 0; white-space: nowrap; border-left: none; border-bottom: 2px solid transparent; border-radius: 5px 5px 0 0; }
+    .sidebar a.active { border-left-color: transparent; border-bottom-color: var(--accent); }
+    main { max-width: none; padding: 1.25rem 1rem 4rem; }
+  }
+
+  .group-title {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    margin: 2.25rem 0 0.75rem;
+  }
+  .note {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    background: var(--canvas-alt);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin: 0 0 1.25rem;
+  }
+  .note code, .skip-note code {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 0.92em;
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 0.05rem 0.3rem;
+  }
+  .skip-note {
+    font-size: 0.85rem;
+    color: var(--ink-soft);
+    border: 1px dashed var(--rule);
+    border-radius: 6px;
+    padding: 0.75rem 1rem;
+    margin: 1.5rem 0;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    overflow: hidden;
+    transition: opacity 150ms;
+    scroll-margin-top: calc(var(--header-h) + 0.75rem);
+  }
+  .card.done { opacity: 0.55; }
+  .card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.9rem 1.1rem;
+    border-bottom: 1px solid var(--rule);
+    flex-wrap: wrap;
+  }
+  .card-head input[type="checkbox"] { width: 1.1rem; height: 1.1rem; accent-color: var(--good); flex-shrink: 0; }
+  .card-title { font-weight: 700; font-size: 0.98rem; margin-right: auto; }
+  .card-path {
+    font-family: ui-monospace, "SF Mono", Consolas, monospace;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    background: var(--canvas-alt);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    word-break: break-all;
+  }
+  .card-body { padding: 1rem 1.1rem 1.1rem; }
+  .card-sub { font-size: 0.83rem; color: var(--ink-soft); margin: 0 0 0.75rem; }
+  pre {
+    background: var(--canvas-alt);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 0.85rem 1rem;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+    margin: 0 0 0.75rem;
+    max-height: 220px;
+    overflow-y: auto;
+  }
+  .actions { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  button {
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    border: 1px solid var(--bar);
+    background: var(--bar);
+    color: #fff;
+    border-radius: 6px;
+    padding: 0.5rem 0.9rem;
+    cursor: pointer;
+    transition: background 150ms, color 150ms, border-color 150ms;
+  }
+  button.secondary { background: transparent; color: var(--ink); border-color: var(--rule); }
+  button.secondary:hover { border-color: var(--ink); }
+  button.copied { background: var(--good); border-color: var(--good); color: #fff; }
+  button:active { transform: translateY(1px); }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="page-title"></h1>
+  <div id="progress"></div>
+</header>
+
+<div class="layout">
+  <nav class="sidebar" id="sidebar"></nav>
+  <main id="main"></main>
+</div>
+
+<script>
+  // ---------------------------------------------------------------------------
+  // TEMPLATE. Copy this file to the project's docs/image-prompts.html, then replace
+  // this first block: PROJECT, the shared wording, and PROMPTS. Leave the code below
+  // it alone, so a fix made here can be copied into every project. The rules for
+  // writing the prompts are in the Website Playbook, stage 4.
+  // ---------------------------------------------------------------------------
+
+  const PROJECT = {
+    name: "Client name",
+    // Where ticks are remembered in this browser. One key per project.
+    storeKey: "client-image-prompts-done",
+    imageFolder: "public/images/",
+    // Shown once at the top of the page. May contain <code>.
+    intro:
+      "Copy one prompt at a time into your image generator. Save the result in <code>public/images</code> under the file name on its card. To skip renaming, set your browser to ask where to save each download, then press Copy file name on the card and paste it into the save box. The reasons behind the look are in <code>docs/IMAGE_PROMPTS.md</code>.",
+    // Shown once at the bottom, for any slot left out on purpose. Empty to hide it.
+    skipNote: "",
+  };
+
+  // Sizes most generators offer. The page crops from these, and each prompt says how.
+  const SHAPE = {
+    landscape: "Landscape, 3:2 (1536 × 1024)",
+    portrait: "Portrait, 2:3 (1024 × 1536)",
+    wide: "Landscape, 16:9, at the largest size on offer",
+  };
+
+  // The first line of every prompt: what the photo is for.
+  const OPENING = (shape) =>
+    `Create a photorealistic documentary photograph for the website of [what the business does, and where]. ${shape}.`;
+
+  // The shared look. Write it from the hero image, so the set reads as one shoot.
+  const LOOK =
+    "Look: [light, time of day, setting, colour, lens, how worn or new things are].";
+
+  // Used when a card has people: true. Ask the client first whether generated people may appear.
+  const PEOPLE =
+    "People: Small in the frame and seen from behind or from a distance. No face is visible.";
+
+  const NO_PEOPLE = "People: None in the frame.";
+
+  const AVOID =
+    "Avoid: any text, lettering, numbers, logos, brand marks, signboards or watermarks; visible faces; oversaturated colour; a glossy or computer-generated look.";
+
+  // Each entry: file (inside imageFolder), title, sub (a note for you, not sent to the
+  // generator), shape, people (true/false) and body (the lines that describe this image).
+  // `group` starts a new section; `groupNote` is optional.
+  // Every body says where the subject sits and which part must stay calm for text.
+  const PROMPTS = [
+    {
+      group: "Home",
+      title: "Home hero",
+      file: "hero.jpg",
+      sub: "Where the headline sits on it, and what each screen size trims.",
+      shape: SHAPE.wide,
+      people: false,
+      body: [
+        "Scene: [what is in the picture].",
+        "Framing, the most important instruction: [where the subject sits, how big it is, and which part stays empty for the headline].",
+      ],
+    },
+    {
+      title: "Second image",
+      file: "second.jpg",
+      sub: "",
+      shape: SHAPE.portrait,
+      people: false,
+      body: [
+        "Scene: [what is in the picture].",
+        "Framing: [where the subject sits; keep the edges the page trims free of anything important].",
+      ],
+    },
+  ];
+
+  // ---------------------------------------------------------------------------
+  // Page code. Nothing below is specific to this project.
+  // ---------------------------------------------------------------------------
+
+  PROMPTS.forEach((p, i) => {
+    p.num = i + 1;
+    p.path = PROJECT.imageFolder + p.file;
+    p.text = [OPENING(p.shape), LOOK, ...p.body, p.people ? PEOPLE : NO_PEOPLE, AVOID].join("\n\n");
+  });
+
+  document.title = `${PROJECT.name}: image prompts`;
+  document.getElementById("page-title").textContent = `${PROJECT.name}: image prompts`;
+
+  function loadDone() {
+    try { return JSON.parse(localStorage.getItem(PROJECT.storeKey) || "{}"); }
+    catch { return {}; }
+  }
+  function saveDone(done) {
+    try { localStorage.setItem(PROJECT.storeKey, JSON.stringify(done)); } catch {}
+  }
+  // Ticks are remembered by file name, so adding or reordering prompts does not move them.
+  const done = loadDone();
+
+  function copyText(text, btn) {
+    const onOk = () => {
+      const original = btn.textContent;
+      btn.textContent = "Copied ✓";
+      btn.classList.add("copied");
+      setTimeout(() => { btn.textContent = original; btn.classList.remove("copied"); }, 1600);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(onOk).catch(() => fallbackCopy(text, onOk));
+    } else {
+      fallbackCopy(text, onOk);
+    }
+  }
+  function fallbackCopy(text, onOk) {
+    const ta = document.createElement("textarea");
+    ta.value = text;
+    ta.style.position = "fixed";
+    ta.style.opacity = "0";
+    document.body.appendChild(ta);
+    ta.focus();
+    ta.select();
+    try { document.execCommand("copy"); onOk(); } catch {}
+    document.body.removeChild(ta);
+  }
+
+  function updateProgress() {
+    const count = PROMPTS.filter((p) => done[p.file]).length;
+    document.getElementById("progress").textContent = `${count} / ${PROMPTS.length} done`;
+  }
+
+  function el(tag, className, text) {
+    const node = document.createElement(tag);
+    if (className) node.className = className;
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function render() {
+    const main = document.getElementById("main");
+    const sidebar = document.getElementById("sidebar");
+
+    const intro = el("div", "note");
+    intro.innerHTML = PROJECT.intro;
+    main.appendChild(intro);
+
+    PROMPTS.forEach((p) => {
+      if (p.group) {
+        main.appendChild(el("div", "group-title", p.group));
+        if (p.groupNote) main.appendChild(el("div", "note", p.groupNote));
+        sidebar.appendChild(el("div", "sb-group", p.group));
+      }
+
+      const link = el("a", "sb-link" + (done[p.file] ? " sb-done" : ""));
+      link.href = `#card-${p.num}`;
+      link.id = `sb-${p.num}`;
+      link.append(el("span", "sb-num", p.num), el("span", "sb-title", p.title));
+      sidebar.appendChild(link);
+
+      const card = el("div", "card" + (done[p.file] ? " done" : ""));
+      card.id = `card-${p.num}`;
+
+      const check = el("input");
+      check.type = "checkbox";
+      check.checked = !!done[p.file];
+      check.setAttribute("aria-label", `Mark "${p.title}" as done`);
+      check.addEventListener("change", () => {
+        done[p.file] = check.checked;
+        saveDone(done);
+        card.classList.toggle("done", check.checked);
+        link.classList.toggle("sb-done", check.checked);
+        updateProgress();
+      });
+
+      const head = el("div", "card-head");
+      head.append(check, el("span", "card-title", `${p.num}. ${p.title}`), el("span", "card-path", p.path));
+
+      const body = el("div", "card-body");
+      if (p.sub) body.appendChild(el("p", "card-sub", p.sub));
+      body.appendChild(el("pre", "", p.text));
+
+      const copyBtn = el("button", "", "Copy prompt");
+      copyBtn.addEventListener("click", () => copyText(p.text, copyBtn));
+      // Name without the ending, so it can be pasted into the browser's save box whatever type the generator gives.
+      const pathBtn = el("button", "secondary", "Copy file name");
+      pathBtn.addEventListener("click", () => copyText(p.file.replace(/\.\w+$/, ""), pathBtn));
+      const actions = el("div", "actions");
+      actions.append(copyBtn, pathBtn);
+      body.appendChild(actions);
+
+      card.append(head, body);
+      main.appendChild(card);
+    });
+
+    if (PROJECT.skipNote) {
+      const skip = el("div", "skip-note");
+      skip.innerHTML = PROJECT.skipNote;
+      main.appendChild(skip);
+    }
+
+    updateProgress();
+  }
+
+  // Highlights the sidebar entry for the card nearest the top of the screen.
+  function setupScrollSpy() {
+    let activeNum = null;
+    const setActive = (num) => {
+      if (num === activeNum) return;
+      activeNum = num;
+      document.querySelectorAll(".sidebar a.active").forEach((a) => a.classList.remove("active"));
+      const link = document.getElementById(`sb-${num}`);
+      if (!link) return;
+      link.classList.add("active");
+      // Scroll only the sidebar itself; scrollIntoView would also move the page.
+      const bar = document.getElementById("sidebar");
+      if (window.innerWidth > 820) {
+        if (link.offsetTop < bar.scrollTop || link.offsetTop + link.offsetHeight > bar.scrollTop + bar.clientHeight) {
+          bar.scrollTop = link.offsetTop - bar.clientHeight / 2;
+        }
+      } else {
+        bar.scrollLeft = link.offsetLeft - bar.clientWidth / 2 + link.offsetWidth / 2;
+      }
+    };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visible = entries.filter((e) => e.isIntersecting);
+        if (visible.length === 0) return;
+        visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        setActive(Number(visible[0].target.id.replace("card-", "")));
+      },
+      { rootMargin: "-73px 0px -70% 0px", threshold: 0 },
+    );
+    PROMPTS.forEach((p) => observer.observe(document.getElementById(`card-${p.num}`)));
+    setActive(1);
+  }
+
+  render();
+  setupScrollSpy();
+</script>
+</body>
+</html>
