@@ -4,7 +4,7 @@ How I turn something I built into posts: Instagram reels and X posts for each ap
 
 **This builds on How I Work** (`HOW_I_WORK.md`). This page only describes what is particular to content. The working rules live in the `showcase` skill, which an AI loads when I ask for reel ideas, hooks, a script or X posts; this page is the map for me.
 
-Status: the skill has been used on one app, typeforme. Moved into build_os on 2026-10-12 from its own project, `Apps\showcase`.
+Status: the skill has been used on one app, typeforme.
 
 ## 1. What it is for
 
@@ -58,7 +58,7 @@ Run these inside the project I just finished.
 
 ## 6. Not covered
 
-- Posts that are not about one app, such as a post about closing a direction or starting over. An earlier idea for this, a journal of my building journey turned into X posts, was planned in `Buildweek\content_agent` and tried once by hand on 2026-09-18. My note from that trial: the first draft felt partly like generic AI writing. It is not built, and nothing from it was moved here.
+- Posts that are not about one app, such as closing a direction or starting over.
 - Other channels, such as LinkedIn or YouTube.
 
 ## 7. Undecided
@@ -67,4 +67,4 @@ Run these inside the project I just finished.
 |---|---|
 | Is one reel per app the right amount? | Unknown until a few have results recorded |
 | Should journey posts get their own mode? | Only if I keep wanting to write them |
-| Does the skill work in Codex? | Linked there since 2026-10-12, not tried |
+| Does the skill work in Codex? | Linked there, not tried |

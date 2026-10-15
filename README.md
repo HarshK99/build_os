@@ -1,28 +1,19 @@
 # Build OS
 
-A single document that records how I build software with AI coding tools, plus a small local page for reading it.
+How I build with AI tools, as a set of Markdown files, plus a small local page for reading them. Start at `BUILD_OS.md`; what is installed where is in `SETUP.md`.
 
-The document covers which tool and skill to use when, what is installed where (Claude Code and Codex), what was found during the inventory, learnings, open decisions, saved chats, and what to do next.
+## What is in this folder
 
-## Files
-
-| File | What it is |
+| Path | What it is |
 |---|---|
-| `BUILD_OS.md` | The document itself. Edit this. |
-| `WEBSITE_PLAYBOOK.md` | The client-website playbook: seven stages from first conversation to handover. Shows as its own page in the sidebar. |
-| `HOW_I_WORK.md` | My standing instructions for any AI tool: how to talk to me, one chat per phase, and which steps wait for me. `~/.claude/CLAUDE.md` pulls this file in by reference, so this folder must not be moved without updating that line. |
-| `product_sense.md` | Why this project exists: goal, user, the decision it serves, the pains picked, the first version and how success is measured. |
-| `sync-codex.mjs` | Rewrites Codex's instruction file (`~/.codex/AGENTS.md`) as a copy of `HOW_I_WORK.md`. Run it after changing that file: `node sync-codex.mjs`. |
-| `IDEA_PLAYBOOK.md` | The idea playbook: six steps from "I don't know what to build" to one idea that three real people have confirmed, ready for a product-sense pass. |
-| `skills/idea-playbook/` | A small skill that tells an AI to read `IDEA_PLAYBOOK.md`. Linked into `D:\FounderMode\ideation\.claude\skills` and `.agents\skills` only, so it loads in chats opened in the ideation folder. |
-| `CONTENT_PLAYBOOK.md` | The content playbook: how an app becomes reels and X posts. A map of the `showcase` skill. |
-| `skills/showcase/` | The showcase skill: its instructions, one file per mode. Linked into `~/.agents/skills` and `~/.claude/skills`. |
-| `library/showcase/` | What the showcase skill remembers: the voice guide, filed reels, and one folder per app. The skill writes here. |
-| `skills/website-playbook/` | A small skill that tells an AI to read `WEBSITE_PLAYBOOK.md` when the work is a client website. Linked into `~/.agents/skills` and `~/.claude/skills`; it points at the playbook and does not copy it. |
-| `tools/shot.mjs` | The shared screenshot tool every project calls, so none installs its own. Needs `npm install` once inside `tools/`. Its options are in the comments at the top of the file. |
-| `index.html` | The reading page: sidebar of sections, keyword search, light and dark mode. |
-| `serve.mjs` | A small local server that gives the page the markdown and scans the project folders. No dependencies. |
-| `launch.ps1` | Starts the server hidden if it is not running, then opens the page. |
+| `*.md` | The documents: `BUILD_OS.md`, `SETUP.md`, `HOW_I_WORK.md`, the playbooks, and this project's `product_sense.md`. Each shows as a page in the viewer |
+| `skills/` | My own skills, linked into both tools. `SETUP.md` lists them |
+| `library/showcase/` | What the `showcase` skill remembers. The skill writes here |
+| `tools/shot.mjs` | The shared screenshot tool. Needs `npm install` once inside `tools/` |
+| `sync-codex.mjs` | Rewrites `~/.codex/AGENTS.md` as a copy of `HOW_I_WORK.md`. Run after changing that file |
+| `index.html`, `serve.mjs`, `launch.ps1` | The viewer: the page, a small local server with no dependencies, and the script the Start Menu shortcut runs |
+
+`~/.claude/CLAUDE.md` pulls in `HOW_I_WORK.md` by its full path, so this folder must not move without updating that line.
 
 ## Reading it
 
@@ -54,20 +45,6 @@ $s.Save()
 
 To remove it, delete `Build OS.lnk` from that folder.
 
-### Hunt Reader
-
-`templates\hunt-reader.html` shows the `.md` files of one Idea Playbook hunt. It needs no server: it opens from disk and asks for the hunt's folder. It works in Edge and Chrome only, so its shortcut opens Edge directly. Create it once from PowerShell, run inside this folder:
-
-```powershell
-$lnk = Join-Path $env:APPDATA "Microsoft\Windows\Start Menu\Programs\Hunt Reader.lnk"
-$s = (New-Object -ComObject WScript.Shell).CreateShortcut($lnk)
-$s.TargetPath = "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe"
-$s.Arguments = "`"$PWD\templates\hunt-reader.html`""
-$s.Save()
-```
-
-To remove it, delete `Hunt Reader.lnk` from that folder.
-
 ## The Projects page
 
 The sidebar has a second page, Projects. It lists every project folder under the folder above this one (here, `D:\FounderMode`), most recently changed first.
@@ -94,7 +71,3 @@ The result is reused for one minute, so a brand-new folder can take up to a minu
 - The server only serves `index.html` and markdown files from this folder, and only to this machine.
 - Search is a plain keyword match over paragraphs, list items and table rows.
 - The open page pings the server every 20 seconds. When the pings stop, the server exits.
-
-## Keeping the document current
-
-`BUILD_OS.md` is a snapshot taken on the date at the top of the file. Re-run the inventory when skills, plugins or tools change, and add to the Learnings section as projects finish.

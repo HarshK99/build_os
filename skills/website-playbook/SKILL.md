@@ -13,7 +13,7 @@ It builds on my shared instructions, How I Work, which you already have. Where t
 
 Then:
 
-1. **Find the stage.** Work out which of the seven stages this project is in from its files: `docs/product_sense.md`, `docs/BRIEF.md` or `docs/PRD.md`, `data/`, `docs/DESIGN.md`, `docs/STATUS.md`, `docs/CHANGES.md`. Tell me the stage in one line.
+1. **Find the stage.** Work out which of the seven stages this project is in from its files: `docs/product_sense.md`, `docs/BRIEF.md` or `docs/PRD.md`, `data/`, `docs/design.md`, `docs/STATUS.md`, `docs/CHANGES.md`. Tell me the stage in one line.
 2. **Check the gate before it.** If the previous stage's gate has not passed, say what is missing and stop there. Don't start the next stage.
 3. **Do only the stage I asked for,** using that stage's section of the playbook.
 4. **Report what didn't fit.** If something in the playbook turns out wrong for this project, tell me, so the playbook gets corrected.

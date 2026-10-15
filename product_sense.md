@@ -88,7 +88,7 @@ Parked, because they serve the side goal or pains I did not pick: skill tidy-up 
 
 ## 9. Success measure
 
-Counted over my next three projects or features.
+Counted over my next three projects or features, under "Runs" in `LOG.md`.
 
 - **The measure I check:** the AI asked the product-sense questions and waited for me every time, and it picked the design skill the rules say every time. Target: 3 out of 3.
 - **The result I hope moves:** no thrown-away redesign or restart that came from building too early or using the wrong skill.
