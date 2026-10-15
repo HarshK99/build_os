@@ -20,6 +20,7 @@ const OUTSIDE_PAGES = {
   "HOW_I_DECIDE.md": resolve(root, "..", "founder_os", "HOW_I_DECIDE.md"),
   "RHYTHM.md": resolve(root, "..", "founder_os", "RHYTHM.md"),
   "IDEA_PLAYBOOK.md": resolve(root, "..", "founder_os", "IDEA_PLAYBOOK.md"),
+  "USING_THE_IDEA_PLAYBOOK.md": resolve(root, "..", "founder_os", "USING_THE_IDEA_PLAYBOOK.md"),
 };
 let lastSeen = Date.now();
 
