@@ -17,6 +17,8 @@ const projectsRoot = process.env.PROJECTS_ROOT || resolve(root, "..");
 const OUTSIDE_PAGES = {
   "CLAUDE_INSTRUCTIONS.md": join(homedir(), ".claude", "CLAUDE.md"),
   "FOUNDER_OS.md": resolve(root, "..", "founder_os", "FOUNDER_OS.md"),
+  "HOW_I_DECIDE.md": resolve(root, "..", "founder_os", "HOW_I_DECIDE.md"),
+  "RHYTHM.md": resolve(root, "..", "founder_os", "RHYTHM.md"),
   "IDEA_PLAYBOOK.md": resolve(root, "..", "founder_os", "IDEA_PLAYBOOK.md"),
 };
 let lastSeen = Date.now();
@@ -194,7 +196,7 @@ async function scanProjects() {
 // Pages meant to be copied into a project, such as the image-prompt page.
 const templatesDir = join(root, "templates");
 // Idea Playbook hunts, one folder each, read live like the pages in this folder.
-const huntsRoot = process.env.HUNTS_ROOT || resolve(root, "..", "ideation");
+const huntsRoot = process.env.HUNTS_ROOT || resolve(root, "..", "founder_os", "hunts");
 // A hunt's files in the order the playbook's steps write them; anything else after, by name.
 const HUNT_ORDER = ["research.md", "directions.md", "product_sense.md"];
 const FILE_TYPES = {

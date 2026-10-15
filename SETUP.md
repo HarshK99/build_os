@@ -24,7 +24,7 @@ They share nothing by themselves: instructions, skills and chats are separate.
 | Skill | Real home | Linked into |
 |---|---|---|
 | `build-os`, `product-sense-playbook`, `app-playbook`, `design-playbook`, `website-playbook`, `showcase` | `build_os\skills\` (mine, in git) | `~/.claude/skills` and `~/.agents/skills` |
-| `idea-playbook` | `founder_os\skills\` | `D:\FounderMode\ideation\.claude\skills` and `.agents\skills` only, so it loads only in chats opened there |
+| `idea-playbook` | `founder_os\skills\` | `D:\FounderMode\founder_os\.claude\skills` and `.agents\skills` only, so it loads only in chats opened there |
 | `copywriting`, `customer-research`, `frontend-design`, `interface-design`, `vercel-react-best-practices`, `writing-plans`, `learn`, `humanizer`, `frontend-slides` | `~/.agents/skills` | `~/.claude/skills` |
 | `teach` 0.6.3 | Codex plugin, plus a copy in `~/.claude/skills/teach` | The one exception: a copy |
 | 16 synced skills (pdf, docx, pptx, xlsx, deep-research and others) | `~/.claude/skills/synced`, managed by claude.ai | |
@@ -74,7 +74,7 @@ Client websites go to my own server or Hostinger through `Apps\packages_personal
 |---|---|
 | `apps [name]` | `D:\FounderMode\Apps`, or straight into that app |
 | `web [name]` | `D:\FounderMode\Websites`, or straight into that site |
-| `fm [folder] [sub]` | `D:\FounderMode`, one or two levels in. The way to `ideation` and `Buildweek` |
+| `fm [folder] [sub]` | `D:\FounderMode`, one or two levels in. The way to `founder_os` and `Buildweek` |
 | `lt`, `lc` | The 10 most recently changed, or created, items here. `-n 20`, `-All`, or a folder |
 
 Claude cannot use these; it does not load the profile.

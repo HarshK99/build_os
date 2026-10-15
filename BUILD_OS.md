@@ -6,11 +6,11 @@ To read it in the browser, open the Start Menu, type "Build OS" and press Enter.
 
 ## The pipeline
 
-What to spend time on, and what to build, is decided before this folder: in Founder OS, `D:\FounderMode\founder_os`, which holds my strategy and the Idea Playbook. Build OS starts once an idea is picked.
+What to spend time on, and what to build, is decided before this folder: in Founder OS, `D:\FounderMode\founder_os`, which holds my strategy, the Idea Playbook and its hunts. Build OS starts once an idea is picked.
 
 | Step | Playbook | When | Command |
 |---|---|---|---|
-| 1. Find what to build | Idea Playbook, in Founder OS | I don't know what to build next | `/idea-playbook`, only in `D:\FounderMode\ideation` |
+| 1. Find what to build | Idea Playbook, in Founder OS | I don't know what to build next | `/idea-playbook`, only in `D:\FounderMode\founder_os` |
 | 2. Decide what it is for | Product Sense Playbook | Every project starts here, and every new feature on a built one | `/product-sense-playbook` |
 | 3. Build it | App Playbook for my own apps, Website Playbook for a client site | After product sense | `/app-playbook`, `/website-playbook` |
 | 3a. Set its look | Design Playbook, used inside step 3 | Before any screen or page is built | `/design-playbook` |

@@ -12,7 +12,7 @@ How I build with AI tools, as a set of Markdown files, plus a small local page f
 | `templates/` | Pages to copy into a project and fill in. Today: `image-prompts.html` |
 | `tools/shot.mjs` | The shared screenshot tool. Needs `npm install` once inside `tools/` |
 | `sync-codex.mjs` | Rewrites `~/.codex/AGENTS.md` as a copy of `HOW_I_WORK.md`. Run after changing that file |
-| `index.html`, `serve.mjs`, `launch.ps1` | The viewer: the page, a small local server with no dependencies, and the script the Start Menu shortcuts run. Besides the `.md` files here it shows `founder_os`'s two documents, every hunt in `D:\FounderMode\ideation`, and the templates |
+| `index.html`, `serve.mjs`, `launch.ps1` | The viewer: the page, a small local server with no dependencies, and the script the Start Menu shortcuts run. Besides the `.md` files here it shows `founder_os`'s four documents, every hunt in `D:\FounderMode\founder_os\hunts`, and the templates |
 
 `~/.claude/CLAUDE.md` pulls in `HOW_I_WORK.md` by its full path, so this folder must not move without updating that line.
 
