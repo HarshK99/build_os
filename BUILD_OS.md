@@ -66,9 +66,11 @@ A playbook never repeats the base. It opens by saying it builds on How I Work, a
 
 ### Starting a new project
 
-1. Do the product-sense pass first and save it as `docs/product_sense.md`. `HOW_I_WORK.md` has the steps.
-2. If the project will go live on Vercel, or is Next.js with a server, turn on the Vercel plugin for it. Leave it off for a static site hosted elsewhere, such as a client site on Hostinger. Claude should offer; if it does not, say "turn on Vercel here". It is one small settings file in the project, and it takes effect in the next chat. Nothing is downloaded or copied.
-3. For a client website, follow the Website Playbook page.
+1. Do the product-sense pass first and save it as `docs/product_sense.md`. `HOW_I_WORK.md` has the steps. Each step is asked as a pick-from-options question (3–4 answers, recommended one first, plus "other"; multi-pick for list steps), so I answer by selecting and pressing Enter. Added 2026-10-15; the rule itself lives in `HOW_I_WORK.md`.
+2. Keep a feature table in the spec (the PRD's scope section): each feature, what it lets the user do, what in `product_sense.md` it serves, and its status. A feature that serves nothing gets removed or explained. Do this once on any app built before its product sense. Added 2026-10-15 (first used on SleepX, where it removed two charts); the rule lives in `HOW_I_WORK.md`.
+3. Set the design direction before building screens and save it as `docs/design.md`: context of use from product sense, the feel in one line, two or three directions each built as an interactive HTML mock-up in `docs/design/mockups/` (viewed in the browser's device mode), then tokens, a screen list with every state, and a screenshot check. After that, refine piece by piece inside the direction. Uses `interface-design` (see section 2). Added 2026-10-15; the steps live in `HOW_I_WORK.md`. First run: SleepX.
+4. If the project will go live on Vercel, or is Next.js with a server, turn on the Vercel plugin for it. Leave it off for a static site hosted elsewhere, such as a client site on Hostinger. Claude should offer; if it does not, say "turn on Vercel here". It is one small settings file in the project, and it takes effect in the next chat. Nothing is downloaded or copied.
+5. For a client website, follow the Website Playbook page.
 
 ## 2. Which tool when
 
@@ -99,7 +101,7 @@ Two rules now sit on top of this table. For a marketing page, `HOW_I_WORK.md` sa
 | Reel ideas or X posts for a finished app | `showcase` |
 | A presentation or slide deck as a web page | `frontend-slides` |
 | React and Next.js performance | `vercel-react-best-practices` |
-| Looking at a page, or taking a screenshot | The shared tool: `node D:\FounderMode\Apps\build_os\tools\shot.mjs [route]`, run from the project's folder. Edge by default, `--chromium` when I say so. `HOW_I_WORK.md` has the rules |
+| Looking at a page, or taking a screenshot | The shared tool: `node D:\FounderMode\Apps\build_os\tools\shot.mjs [route]`, run from the project's folder. Edge by default, `--chromium` when I say so. Since 2026-10-15 it also opens local `.html` files (design mock-ups), emulates a phone with `--mobile`, and can `--click` and `--scroll-in` (for example a wheel picker) before the shot, printing any page errors. The comments at the top of the file list every option. `HOW_I_WORK.md` has the rules |
 | Starting a project, or adding a feature | No skill. `HOW_I_WORK.md` requires a `product_sense.md` first, and the pain written down before any new feature |
 
 ### Commands I can type
@@ -108,6 +110,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 
 | Command | What it does | Available |
 |---|---|---|
+| `/build-os` | Checks a project against Build OS: a gap table, where the build really is against its plan, and contradictions between docs and code, then starts the product-sense pass (or, if one exists, checks the feature table against it). Changes no code. Mostly for projects started before Build OS. First run by hand on SleepX, 2026-10-15 | Everywhere, and in Codex |
 | `/learn` | Drafts process learnings from the session for the project's `learnings.md`; shows them for approval before saving | Everywhere. Also in Codex as `$learn` |
 | `/writing-plans` | Turns a spec into a step-by-step plan before coding | Everywhere |
 | `/humanizer` | Rewrites AI-sounding text | Everywhere |
@@ -140,6 +143,7 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `frontend-slides` | skill | same, since 2026-10-12; added 2026-10-09 | not in the lock file |
 | `teach` 0.6.3 | skill | `~/.claude/skills/teach`, copied from the Codex install on 2026-10-12 | udayanwalvekar/teach |
 | `website-playbook` | skill | `Apps\build_os\skills\website-playbook`, linked into both tools, since 2026-10-12 | own |
+| `build-os` | skill | `Apps\build_os\skills\build-os`, linked into both tools, since 2026-10-15 | own |
 | `idea-playbook` | skill | `Apps\build_os\skills\idea-playbook`, since 2026-10-12. Linked into `D:\FounderMode\planning` only (`.claude\skills` and `.agents\skills`) since 2026-10-13, so it loads only in chats opened there | own |
 | `customer-research` 2.0.4 | skill | `~/.agents/skills`, linked, since 2026-10-12 | coreyhaines31/marketingskills, the same source as `copywriting` |
 | `frontend-design` 1.1.0 | plugin, switched off on 2026-10-12 | `~/.claude/plugins` | anthropics/claude-code |
@@ -147,11 +151,11 @@ Type these in Claude Code. Each one runs the skill of the same name.
 | `vercel` 0.50.0 | plugin, 40 skills, 3 agents, session hooks. Off globally since 2026-10-12; on in 39 Next.js projects, and off on purpose in 9 client and static sites | `~/.claude/plugins` | claude-plugins-official |
 | 16 synced skills (pdf, docx, pptx, xlsx, deep-research and others) | skills | `~/.claude/skills/synced` | claude.ai account |
 | How I Work | shared instructions for any AI tool | `Apps\build_os\HOW_I_WORK.md`, pulled into `CLAUDE.md` by an `@` reference line | own |
-| Claude-only rules, 4 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-12 | own |
+| Claude-only rules, 5 items | instructions | `~/.claude/CLAUDE.md`, last changed 2026-10-15 | own |
 
 The first five linked skills are tracked in `~/skills-lock.json`. `customer-research` was installed with the same installer on 2026-10-12, but the installer now keeps its record in a different file, `~/.agents/.skill-lock.json`, so there are two lock files.
 
-**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. Three skills I wrote myself, `showcase`, `website-playbook` and `idea-playbook`, have their real home in `Apps\build_os\skills` so they are kept in git, and both tools link to that. `idea-playbook` is linked from the `planning` folder instead of the user folders, because hunts are the only place it is used. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
+**The rule for skills: one real home, links elsewhere, never a copy.** The home is `~/.agents/skills`. Codex reads that folder directly, and Claude Code gets a link (a Windows folder link, so there is no second copy). Eight skills follow this. Four skills I wrote myself, `showcase`, `website-playbook`, `idea-playbook` and `build-os`, have their real home in `Apps\build_os\skills` so they are kept in git, and both tools link to that. `idea-playbook` is linked from the `planning` folder instead of the user folders, because hunts are the only place it is used. The exceptions are installs a tool manages for itself: plugins, the 16 synced skills, and `teach`, which Codex installed and Claude has a copy of. Those update through their own installer, not by hand.
 
 On 2026-10-12 the 13 rules in `CLAUDE.md` that would hold in any AI tool were moved into `HOW_I_WORK.md`, word for word. That includes the three added since the first inventory: the product-sense pass, stating the pain before a new feature, and agreeing the hero concept. One rule stayed behind because it names a Claude Code setting (running long commands in the background). The old file is saved at `~/.claude/backups/CLAUDE.md.2026-10-12-before-shared-move`.
 
@@ -350,7 +354,7 @@ Proposed rule, not yet agreed: before a project goes quiet, run `learn` and save
 
 The Product Sense page now sets the priority. Its first version was made on 2026-10-12: tighter product-sense wording, skill-picking rules for Claude, and a design results log. What matters next is the measure: over my next three projects or features, did the AI ask before building, and did it pick the design skill the rules say?
 
-The Website Playbook keeps its own pending list, in its section 14: 3 things to prove on a real site, 8 to build, 9 to decide and 10 gaps. Its first step is to run the playbook on the next client site.
+The Website Playbook keeps its own pending list, in its section 14: 3 things to prove on a real site, 9 to build, 9 to decide and 10 gaps. Its first step is to run the playbook on the next client site.
 
 The list below is everything else, in the order I would do it. Most of it serves the side goal and is parked until then.
 
