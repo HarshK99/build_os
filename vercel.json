@@ -1,0 +1,10 @@
+{
+  "rewrites": [
+    { "source": "/_docs", "destination": "/snapshot/_docs.json" },
+    { "source": "/_projects", "destination": "/snapshot/_projects.json" },
+    { "source": "/_templates", "destination": "/snapshot/_templates.json" },
+    { "source": "/_hunts", "destination": "/snapshot/_hunts.json" },
+    { "source": "/_hunt/:path*", "destination": "/snapshot/_hunt/:path*" },
+    { "source": "/:file(.*\\.md)", "destination": "/snapshot/:file" }
+  ]
+}

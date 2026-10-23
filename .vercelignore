@@ -1,0 +1,6 @@
+tools/
+.shots/
+skills/
+library/
+launch.ps1
+sync-codex.mjs

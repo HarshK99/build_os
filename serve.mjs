@@ -2,7 +2,7 @@
 // Start Menu shortcut); can also be run by hand with: node serve.mjs
 // It stops itself once no page has asked for anything for a few minutes.
 import { createServer } from "node:http";
-import { readFile, readdir, stat } from "node:fs/promises";
+import { mkdir, readFile, readdir, stat, writeFile } from "node:fs/promises";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { homedir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -62,8 +62,9 @@ const isProjectDir = (entry) => entry.isDirectory() && !entry.name.startsWith(".
 async function newestChange(dir, depth = 4) {
   let newest = 0;
   for (const entry of await list(dir)) {
-    if (SKIP.has(entry.name)) continue;
     const full = join(dir, entry.name);
+    // The snapshot is rewritten from this scan, so counting it would change the scan every time.
+    if (SKIP.has(entry.name) || full === snapshotDir) continue;
     if (entry.isDirectory()) {
       if (depth > 1) newest = Math.max(newest, await newestChange(full, depth - 1));
     } else {
@@ -165,7 +166,6 @@ let projectsCache = { at: 0, body: "" };
 async function scanProjects() {
   if (Date.now() - projectsCache.at < 60 * 1000) return projectsCache.body;
 
-  const started = Date.now();
   const jobs = [];
   for (const group of (await list(projectsRoot)).filter(isProjectDir)) {
     const groupDir = join(projectsRoot, group.name);
@@ -187,7 +187,7 @@ async function scanProjects() {
 
   projectsCache = {
     at: Date.now(),
-    body: JSON.stringify({ root: projectsRoot, tookMs: Date.now() - started, projects }),
+    body: JSON.stringify({ root: projectsRoot, projects }),
   };
   return projectsCache.body;
 }
@@ -228,6 +228,52 @@ async function listHunts() {
   return hunts.sort((a, b) => b.changed - a.changed);
 }
 
+// ---- Snapshot: the online copy on Vercel reads these files instead of asking a server ----
+
+// Every data answer is also saved here, at the path vercel.json points its address to.
+// A file is only rewritten when its contents change, so git shows real changes only.
+const snapshotDir = join(root, "snapshot");
+
+async function save(name, body) {
+  const file = join(snapshotDir, name);
+  const text = String(body);
+  if ((await readFile(file, "utf8").catch(() => null)) === text) return;
+  await mkdir(dirname(file), { recursive: true });
+  await writeFile(file, text);
+  // When anything last changed, so the online copy can say how old it is.
+  await writeFile(join(snapshotDir, "_taken.json"), JSON.stringify({ at: Date.now() }));
+}
+// Saving must never stop a page from being served.
+const keep = (name, body) => save(name, body).catch(() => {});
+
+async function listDocs() {
+  // README.md describes this repo; it is not one of the pages to read.
+  const docs = (await readdir(root))
+    .filter((f) => f.toLowerCase().endsWith(".md") && f.toLowerCase() !== "readme.md")
+    .sort();
+  return JSON.stringify([...docs, ...Object.keys(OUTSIDE_PAGES)]);
+}
+const huntsBody = async () => JSON.stringify({ root: huntsRoot, hunts: await listHunts() });
+
+// Saves everything once at start-up, so a push carries a full copy even for pages not opened.
+async function snapshotAll() {
+  await keep("_docs.json", await listDocs());
+  await keep("_templates.json", JSON.stringify(await listTemplates()));
+  const hunts = await huntsBody();
+  await keep("_hunts.json", hunts);
+  for (const { name, files } of JSON.parse(hunts).hunts) {
+    for (const file of files) {
+      const md = await readFile(join(huntsRoot, name, file)).catch(() => null);
+      if (md) await keep(`_hunt/${name}/${file}`, md);
+    }
+  }
+  for (const [name, source] of Object.entries(OUTSIDE_PAGES)) {
+    const md = await readFile(source).catch(() => null);
+    if (md) await keep(name, md);
+  }
+  await keep("_projects.json", await scanProjects());
+}
+
 // ---- Server ----
 
 const server = createServer(async (req, res) => {
@@ -242,21 +288,16 @@ const server = createServer(async (req, res) => {
     if (path === "/_ping") {
       return send(res, 204, "text/plain", "");
     }
-    if (path === "/_docs") {
-      // README.md describes this repo; it is not one of the pages to read.
-      const docs = (await readdir(root))
-        .filter((f) => f.toLowerCase().endsWith(".md") && f.toLowerCase() !== "readme.md")
-        .sort();
-      return send(res, 200, "application/json", JSON.stringify([...docs, ...Object.keys(OUTSIDE_PAGES)]));
-    }
-    if (path === "/_projects") {
-      return send(res, 200, "application/json", await scanProjects());
-    }
-    if (path === "/_templates") {
-      return send(res, 200, "application/json", JSON.stringify(await listTemplates()));
-    }
-    if (path === "/_hunts") {
-      return send(res, 200, "application/json", JSON.stringify({ root: huntsRoot, hunts: await listHunts() }));
+    const data = {
+      "/_docs": listDocs,
+      "/_projects": scanProjects,
+      "/_templates": async () => JSON.stringify(await listTemplates()),
+      "/_hunts": huntsBody,
+    }[path];
+    if (data) {
+      const body = await data();
+      keep(`${path.slice(1)}.json`, body);
+      return send(res, 200, "application/json", body);
     }
     // /templates/<file>: one file straight inside the templates folder.
     if (path.startsWith("/templates/")) {
@@ -271,12 +312,16 @@ const server = createServer(async (req, res) => {
       if (rest.length || !plainName(hunt || "") || !plainName(file || "") || !file.toLowerCase().endsWith(".md")) {
         return send(res, 404, "text/plain", "Not found");
       }
-      return send(res, 200, "text/markdown; charset=utf-8", await readFile(join(huntsRoot, hunt, file)));
+      const md = await readFile(join(huntsRoot, hunt, file));
+      keep(`_hunt/${hunt}/${file}`, md);
+      return send(res, 200, "text/markdown; charset=utf-8", md);
     }
     // Only markdown files that sit directly in this folder are served.
     const name = basename(path);
     if (path === `/${name}` && OUTSIDE_PAGES[name]) {
-      return send(res, 200, "text/markdown; charset=utf-8", await readFile(OUTSIDE_PAGES[name]));
+      const md = await readFile(OUTSIDE_PAGES[name]);
+      keep(name, md);
+      return send(res, 200, "text/markdown; charset=utf-8", md);
     }
     if (path === `/${name}` && name.toLowerCase().endsWith(".md")) {
       return send(res, 200, "text/markdown; charset=utf-8", await readFile(join(root, name)));
@@ -295,6 +340,7 @@ server.on("error", (error) => {
 
 server.listen(port, "127.0.0.1", () => {
   console.log(`Build OS docs: http://localhost:${port}`);
+  snapshotAll();
 });
 
 setInterval(() => {
