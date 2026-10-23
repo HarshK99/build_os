@@ -1,0 +1,2 @@
+# The viewer compares these byte for byte before rewriting them; line-ending conversion would make every file look changed.
+snapshot/** -text
