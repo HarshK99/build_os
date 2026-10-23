@@ -4,3 +4,5 @@ skills/
 library/
 launch.ps1
 sync-codex.mjs
+.env*
+.vercel/
