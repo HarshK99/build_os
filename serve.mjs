@@ -17,6 +17,8 @@ const projectsRoot = process.env.PROJECTS_ROOT || resolve(root, "..");
 const OUTSIDE_PAGES = {
   "CLAUDE_INSTRUCTIONS.md": join(homedir(), ".claude", "CLAUDE.md"),
   "FOUNDER_OS.md": resolve(root, "..", "founder_os", "FOUNDER_OS.md"),
+  "OUTCOMES.md": resolve(root, "..", "founder_os", "OUTCOMES.md"),
+  "SELF_SNAPSHOT.md": resolve(root, "..", "founder_os", "SELF_SNAPSHOT.md"),
   "HOW_I_DECIDE.md": resolve(root, "..", "founder_os", "HOW_I_DECIDE.md"),
   "RHYTHM.md": resolve(root, "..", "founder_os", "RHYTHM.md"),
   "IDEA_PLAYBOOK.md": resolve(root, "..", "founder_os", "IDEA_PLAYBOOK.md"),
